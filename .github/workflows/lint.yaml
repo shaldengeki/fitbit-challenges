@@ -13,7 +13,8 @@ jobs:
           node-version: 18
       - name: black
         uses: psf/black@stable
-        options: "--check --verbose"
-        src: "./api"
+        with:
+          options: "--check --verbose"
+          src: "./api"
       - run: npm ci
       - run: npm test
