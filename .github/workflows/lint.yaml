@@ -15,6 +15,6 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           source-root: frontend
       - name: black
-        uses: lgeiger/black-action@master
-        with:
-          args: "api --check"
+        uses: psf/black@stable
+        options: "--check --verbose"
+        src: "./api"
