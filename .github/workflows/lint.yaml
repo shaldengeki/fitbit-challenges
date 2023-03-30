@@ -8,13 +8,14 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: eslint
-        uses: hallee/eslint-action@1.0.3
+        uses: actions/setup-node@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          source-root: frontend
+          node-version: 18
       - name: black
         uses: psf/black@stable
         options: "--check --verbose"
         src: "./api"
+      - run: npm ci
+      - run: npm test
