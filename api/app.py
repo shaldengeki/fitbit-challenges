@@ -15,15 +15,17 @@ app.config[
     host=os.getenv("DB_HOST", "pg"),
     db=os.getenv("DB_NAME", "api_development"),
 )
+
+cors_origin_parts = [os.getenv("FRONTEND_PROTOCOL", "http"), "://", os.getenv("FRONTEND_HOST", "localhost")]
+if os.getenv("FRONTEND_PORT", None):
+  cors_origin_parts.append(os.getenv("FRONTEND_PORT", 5001))
+
 CORS(
     app,
     resources={
         "/graphql": {
             "origins": [
-                "http://{host}:{port}".format(
-                    host=os.getenv("FRONTEND_HOST", "localhost"),
-                    port=os.getenv("FRONTEND_PORT", 5001),
-                )
+              "".join(cors_origin_parts)
             ],
         }
     },
