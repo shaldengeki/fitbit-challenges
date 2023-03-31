@@ -16,17 +16,19 @@ app.config[
     db=os.getenv("DB_NAME", "api_development"),
 )
 
-cors_origin_parts = [os.getenv("FRONTEND_PROTOCOL", "http"), "://", os.getenv("FRONTEND_HOST", "localhost")]
+cors_origin_parts = [
+    os.getenv("FRONTEND_PROTOCOL", "http"),
+    "://",
+    os.getenv("FRONTEND_HOST", "localhost"),
+]
 if os.getenv("FRONTEND_PORT", None):
-  cors_origin_parts.append(os.getenv("FRONTEND_PORT", 5001))
+    cors_origin_parts.append(os.getenv("FRONTEND_PORT", 5001))
 
 CORS(
     app,
     resources={
         "/graphql": {
-            "origins": [
-              "".join(cors_origin_parts)
-            ],
+            "origins": ["".join(cors_origin_parts)],
         }
     },
 )
