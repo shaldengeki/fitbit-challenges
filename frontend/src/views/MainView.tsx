@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
-import UserLeaderboard from '../components/UserLeaderboard.tsx';
+import WorkweekHustle from '../components/WorkweekHustle.tsx';
 
 const TEST_QUERY = gql`
   query Test {
@@ -17,7 +17,7 @@ const MainView = () => {
 
   return (
     <div className="container mx-auto">
-        <UserLeaderboard />
+        <WorkweekHustle />
         <div>{data.test}</div>
     </div>
   )

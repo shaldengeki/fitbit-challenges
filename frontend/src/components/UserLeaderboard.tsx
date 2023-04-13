@@ -2,9 +2,10 @@ import React from 'react';
 import ProgressBar from './ProgressBar.tsx';
 // import { useQuery, gql } from '@apollo/client';
 
-const UserLeaderboardHeader = () => (
-    <div className='col-span-3 text-center text-2xl'>Leaderboard</div>
-);
+const UserLeaderboardHeader = (props) => {
+    const {title} = props;
+    return (<div className='col-span-3 text-center text-2xl'>{title}</div>);
+};
 
 const UserLeaderboardListingEntry = (props) => {
     const {user, maxSteps} = props;
@@ -32,7 +33,8 @@ const UserLeaderboardListing = () => {
     )
 }
 
-const UserLeaderboard = () => {
+const UserLeaderboard = (props) => {
+    const {challengeName} = props;
 //   const { loading, error, data } = useQuery(TEST_QUERY);
 
 //   if (loading) return <p>Loading...</p>;
@@ -41,7 +43,7 @@ const UserLeaderboard = () => {
 
   return (
     <div className="bg-blue-200 p-2">
-        <UserLeaderboardHeader />
+        <UserLeaderboardHeader title={challengeName} />
         <UserLeaderboardListing />
     </div>
   )
