@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
+import UserLeaderboard from '../components/UserLeaderboard.tsx';
 
 const TEST_QUERY = gql`
   query Test {
@@ -15,7 +16,10 @@ const MainView = () => {
   if (error) return <p>Error : {error.message}</p>;
 
   return (
-    <div>{data.test}</div>
+    <div>
+        <UserLeaderboard />
+        <div>{data.test}</div>
+    </div>
   )
 }
 
