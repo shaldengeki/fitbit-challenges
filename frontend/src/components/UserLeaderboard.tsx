@@ -24,7 +24,7 @@ const UserLeaderboard = () => {
 //   if (error) return <p>Error : {error.message}</p>;
 
   return (
-    <div>
+    <div className="bg-blue-200 p-2">
         <UserLeaderboardHeader />
         <UserLeaderboardListing />
     </div>

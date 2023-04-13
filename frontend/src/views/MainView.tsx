@@ -16,7 +16,7 @@ const MainView = () => {
   if (error) return <p>Error : {error.message}</p>;
 
   return (
-    <div>
+    <div className="container mx-auto">
         <UserLeaderboard />
         <div>{data.test}</div>
     </div>
