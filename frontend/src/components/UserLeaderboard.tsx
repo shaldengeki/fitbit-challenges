@@ -11,9 +11,7 @@ const UserLeaderboardListingEntry = (props) => {
     return (
         <div className="grid grid-cols-3 gap-0">
             <div className="col-span-2">{user['name']}</div>
-            <div className="text-right">
-                <ProgressBar value={user['steps']} maximum={maxSteps} />
-            </div>
+            <ProgressBar value={user['steps']} maximum={maxSteps} />
         </div>
     );
 };
