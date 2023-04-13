@@ -1,17 +1,35 @@
 import React from 'react';
+import ProgressBar from './ProgressBar.tsx';
 // import { useQuery, gql } from '@apollo/client';
 
 const UserLeaderboardHeader = () => (
     <div className='col-span-3 text-center text-2xl'>Leaderboard</div>
 );
 
-const UserLeaderboardListing = () => {
+const UserLeaderboardListingEntry = (props) => {
+    const {user, maxSteps} = props;
     return (
         <div className="grid grid-cols-3 gap-0">
-            <div className="col-span-2">merlyneve</div>
-            <div className="text-right">1,234</div>
-            <div className="col-span-2">ouguoc</div>
-            <div className="text-right">567</div>
+            <div className="col-span-2">{user['name']}</div>
+            <div className="text-right">
+                <ProgressBar value={user['steps']} maximum={maxSteps} />
+            </div>
+        </div>
+    );
+};
+
+const UserLeaderboardListing = () => {
+    const users = [
+        {"name": "merlyneve", "steps": 1234},
+        {"name": "ouguoc", "steps": 567},
+    ];
+
+    const maxSteps = Math.max.apply(null, users.map((user, _) => user['steps']))
+    const entries = users.map((user, _) => <UserLeaderboardListingEntry user={user} maxSteps={maxSteps} />);
+
+    return (
+        <div>
+            {entries}
         </div>
     )
 }
