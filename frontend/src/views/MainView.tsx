@@ -7,7 +7,7 @@ const TEST_QUERY = gql`
   }
 `;
 
-function MainView() {
+const MainView = () => {
   const { loading, error, data } = useQuery(TEST_QUERY);
 
   if (loading) return <p>Loading...</p>;
