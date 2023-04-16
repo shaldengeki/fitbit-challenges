@@ -27,3 +27,7 @@ Navigate in a browser to:
 - [The frontend](http://localhost:5001)
 
 You should be able to make changes to frontend files and see them show up ~immediately!
+
+### Run tests
+
+To run tests, run `bin/test`, which will run Python and JS tests. The command will error out if any tests failed.
