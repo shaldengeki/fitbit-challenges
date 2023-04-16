@@ -18,13 +18,15 @@ def Schema(models):
                     resolve=get_test_field,
                     description="Test field",
                 ),
-                "challenges": challenges_field(models),
+                "challenges": challenges_field(models.WorkweekHustle),
             },
         ),
         mutation=GraphQLObjectType(
             name="Mutation",
             fields={
-                "createWorkweekHustle": create_workweek_hustle_field(models),
+                "createWorkweekHustle": create_workweek_hustle_field(
+                    models.WorkweekHustle
+                ),
             },
         ),
     )
