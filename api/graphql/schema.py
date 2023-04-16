@@ -2,6 +2,7 @@ from graphql import GraphQLObjectType, GraphQLSchema, GraphQLField, GraphQLStrin
 
 from .types.workweek_hustle import challenges_field, create_workweek_hustle_field
 
+
 def get_test_field(*args, **kwargs) -> str:
     return "hello world!"
 
