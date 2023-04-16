@@ -10,3 +10,6 @@ flask-cors
 pre-commit
 black
 pytest
+types-Flask-Migrate
+types-Flask-Cors
+sqlalchemy-stubs

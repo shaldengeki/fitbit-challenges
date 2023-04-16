@@ -9,14 +9,13 @@ from graphql import (
     GraphQLString,
 )
 from sqlalchemy import desc
+from typing import Any, Type
 
 from ...config import db
+from ...models import WorkweekHustle
 
 
-# TODO: typing everywhere.
-
-
-def workweek_hustle_resolver() -> dict:
+def workweek_hustle_fields() -> dict[str, GraphQLField]:
     return {
         "id": GraphQLField(
             GraphQLNonNull(GraphQLInt),
@@ -47,18 +46,20 @@ def workweek_hustle_resolver() -> dict:
 workweek_hustle_type = GraphQLObjectType(
     "WorkweekHustle",
     description="A Workweek Hustle challenge.",
-    fields=workweek_hustle_resolver,
+    fields=workweek_hustle_fields,
 )
 
 
-def fetch_workweek_hustles(models, params):
-    query_obj = models.WorkweekHustle.query
+def fetch_workweek_hustles(
+    workweek_hustle_model: Type[WorkweekHustle], params: dict[str, Any]
+):
+    query_obj = workweek_hustle_model.query
     if params.get("id", False):
-        query_obj = query_obj.filter(models.WorkweekHustle.id == params["id"])
-    return query_obj.order_by(desc(models.WorkweekHustle.start_at)).all()
+        query_obj = query_obj.filter(workweek_hustle_model.id == params["id"])
+    return query_obj.order_by(desc(workweek_hustle_model.start_at)).all()
 
 
-workweek_hustles_filters = {
+workweek_hustles_filters: dict[str, GraphQLArgument] = {
     "id": GraphQLArgument(
         GraphQLInt,
         description="ID of the challenge.",
@@ -66,16 +67,20 @@ workweek_hustles_filters = {
 }
 
 
-def challenges_field(models):
+def challenges_field(workweek_hustle_model: Type[WorkweekHustle]) -> GraphQLField:
     return GraphQLField(
         GraphQLList(workweek_hustle_type),
         args=workweek_hustles_filters,
-        resolve=lambda root, info, **args: fetch_workweek_hustles(models, args),
+        resolve=lambda root, info, **args: fetch_workweek_hustles(
+            workweek_hustle_model, args
+        ),
     )
 
 
-def create_workweek_hustle(models, args):
-    challenge = models.WorkweekHustle(
+def create_workweek_hustle(
+    workweek_hustle_model: Type[WorkweekHustle], args: dict[str, Any]
+) -> WorkweekHustle:
+    challenge = workweek_hustle_model(
         users=args["users"],
         start_at=datetime.datetime.utcfromtimestamp(int(args["startAt"])),
         end_at=datetime.datetime.utcfromtimestamp(int(args["endAt"])),
@@ -86,7 +91,9 @@ def create_workweek_hustle(models, args):
     return challenge
 
 
-def create_workweek_hustle_field(models):
+def create_workweek_hustle_field(
+    workweek_hustle_model: Type[WorkweekHustle],
+) -> GraphQLField:
     return GraphQLField(
         workweek_hustle_type,
         description="Create a Workweek Hustle challenge.",
@@ -104,5 +111,7 @@ def create_workweek_hustle_field(models):
                 description="Time the challenge should end, in unix epoch time.",
             ),
         },
-        resolve=lambda root, info, **args: create_workweek_hustle(models, args),
+        resolve=lambda root, info, **args: create_workweek_hustle(
+            workweek_hustle_model, args
+        ),
     )
