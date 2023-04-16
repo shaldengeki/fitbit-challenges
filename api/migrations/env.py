@@ -26,7 +26,7 @@ def get_engine():
 
 
 def get_engine_url():
-    # Set the databse URL directly from environment variables.
+    # Set the database URL directly from environment variables.
     return f"postgresql://{os.environ.get('DB_USERNAME', 'admin')}:{os.environ.get('DB_PASSWORD', 'development')}@{os.environ.get('DB_HOST', 'pg')}/{os.environ.get('DATABASE_NAME', 'api_development')}"
     # try:
     #     return get_engine().url.render_as_string(hide_password=False).replace(
