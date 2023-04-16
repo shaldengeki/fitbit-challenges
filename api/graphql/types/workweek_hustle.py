@@ -13,6 +13,8 @@ from sqlalchemy import desc
 from ...config import db
 
 
+# TODO: typing everywhere.
+
 def workweek_hustle_resolver() -> dict:
     return {
         "id": GraphQLField(
@@ -66,7 +68,6 @@ def challenges_field(models):
     )
 
 def create_workweek_hustle(models, args):
-    # TODO: convert unix timestamps to datetime objects.
     challenge = models.WorkweekHustle(
         users=args["users"],
         start_at=datetime.datetime.utcfromtimestamp(int(args["startAt"])),
