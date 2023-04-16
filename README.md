@@ -1,15 +1,17 @@
 # fitbit-challenges
 
-# Development
+## Development
 
-## Set up pre-commit
+### Set up pre-commit
+
+This will set up some hooks that will fix e.g. trailing whitespace or formatting issues when you `git commit`:
 ```
 pip install -r requirements.txt
 pre-commit install
 pre-commit run --all-files
 ```
 
-## Run the app
+### Run the app
 Install [docker compose](https://docs.docker.com/compose/install/), then:
 
 ```
