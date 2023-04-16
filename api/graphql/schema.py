@@ -1,5 +1,6 @@
 from graphql import GraphQLObjectType, GraphQLSchema, GraphQLField, GraphQLString
 
+from .types.workweek_hustle import challenges_field
 
 def get_test_field(*args, **kwargs) -> str:
     return "hello world!"
@@ -15,7 +16,8 @@ def Schema(models):
                     args={},
                     resolve=get_test_field,
                     description="Test field",
-                )
+                ),
+                "challenges": challenges_field(models),
             },
         )
     )
