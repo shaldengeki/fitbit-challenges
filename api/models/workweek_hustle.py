@@ -9,12 +9,8 @@ class WorkweekHustle(db.Model):
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), default=datetime.datetime.utcnow, nullable=False
     )
-    start_at = db.Column(
-        db.TIMESTAMP(timezone=True), default=datetime.datetime.utcnow, nullable=False
-    )
-    end_at = db.Column(
-        db.TIMESTAMP(timezone=True), default=datetime.datetime.utcnow, nullable=False
-    )
+    start_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+    end_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
 
     def __repr__(self):
         return "<WorkweekHustle {id}>".format(id=self.id)

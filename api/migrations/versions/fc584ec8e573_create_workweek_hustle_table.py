@@ -22,7 +22,7 @@ def upgrade():
         'workweek_hustles',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('users', sa.Unicode(500), nullable=False),
-        sa.Column('created_at', sa.DateTime, default=now),
+        sa.Column('created_at', sa.DateTime, default=now, nullable=False),
         sa.Column('start_at', sa.DateTime, nullable=False),
         sa.Column('end_at', sa.DateTime, nullable=False),
     )

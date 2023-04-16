@@ -1,6 +1,6 @@
 from graphql import GraphQLObjectType, GraphQLSchema, GraphQLField, GraphQLString
 
-from .types.workweek_hustle import challenges_field
+from .types.workweek_hustle import challenges_field, create_workweek_hustle_field
 
 def get_test_field(*args, **kwargs) -> str:
     return "hello world!"
@@ -19,5 +19,11 @@ def Schema(models):
                 ),
                 "challenges": challenges_field(models),
             },
-        )
+        ),
+        mutation=GraphQLObjectType(
+            name="Mutation",
+            fields={
+                "createWorkweekHustle": create_workweek_hustle_field(models),
+            },
+        ),
     )

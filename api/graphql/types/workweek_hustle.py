@@ -13,7 +13,7 @@ from sqlalchemy import desc
 from ...config import db
 
 
-def workweek_hustle_resolver():
+def workweek_hustle_resolver() -> dict:
     return {
         "id": GraphQLField(
             GraphQLNonNull(GraphQLInt), description="The id of the Workweek Hustle challenge."
@@ -45,7 +45,6 @@ workweek_hustle_type = GraphQLObjectType(
     fields=workweek_hustle_resolver,
 )
 
-
 def fetch_workweek_hustles(models, params):
     query_obj = models.WorkweekHustle.query
     if params.get("id", False):
@@ -64,4 +63,37 @@ def challenges_field(models):
         GraphQLList(workweek_hustle_type),
         args=workweek_hustles_filters,
         resolve=lambda root, info, **args: fetch_workweek_hustles(models, args),
+    )
+
+def create_workweek_hustle(models, args):
+    # TODO: convert unix timestamps to datetime objects.
+    challenge = models.WorkweekHustle(
+        users=args["users"],
+        start_at=datetime.datetime.utcfromtimestamp(int(args["startAt"])),
+        end_at=datetime.datetime.utcfromtimestamp(int(args["endAt"])),
+    )
+    db.session.add(challenge)
+
+    db.session.commit()
+    return challenge
+
+def create_workweek_hustle_field(models):
+    return GraphQLField(
+        workweek_hustle_type,
+        description="Create a Workweek Hustle challenge.",
+        args={
+            "users": GraphQLArgument(
+                GraphQLNonNull(GraphQLString),
+                description="Comma-separated list of usernames participating in the challenge.",
+            ),
+            "startAt": GraphQLArgument(
+                GraphQLNonNull(GraphQLInt),
+                description="Time the challenge should start, in unix epoch time.",
+            ),
+            "endAt": GraphQLArgument(
+                GraphQLNonNull(GraphQLInt),
+                description="Time the challenge should end, in unix epoch time.",
+            ),
+        },
+        resolve=lambda root, info, **args: create_workweek_hustle(models, args),
     )
