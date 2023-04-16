@@ -48,10 +48,20 @@ workweek_hustle_type = GraphQLObjectType(
 
 def fetch_workweek_hustles(models, params):
     query_obj = models.WorkweekHustle.query
+    if params.get("id", False):
+        query_obj = query_obj.filter(models.WorkweekHustle.id == params["id"])
     return query_obj.order_by(desc(models.WorkweekHustle.start_at)).all()
+
+workweek_hustles_filters = {
+    "id": GraphQLArgument(
+        GraphQLInt,
+        description="ID of the challenge.",
+    ),
+}
 
 def challenges_field(models):
     return GraphQLField(
         GraphQLList(workweek_hustle_type),
+        args=workweek_hustles_filters,
         resolve=lambda root, info, **args: fetch_workweek_hustles(models, args),
     )
