@@ -5,6 +5,7 @@ services:
       context: ./api
       dockerfile: Dockerfile
     image: api
+    command: ["./scripts/wait-for-postgres.sh", "--", "flask", "run", "--host", "0.0.0.0", "--port", "5000"]
     ports:
       - "5000:5000"
     volumes:
@@ -18,6 +19,7 @@ services:
       - DATABASE_NAME=api_development
       - FRONTEND_HOST=localhost
       - FRONTEND_PORT=5001
+    restart: always
   migration:
     build:
       context: ./api
@@ -25,7 +27,7 @@ services:
     image: api
     volumes:
       - ./api:/usr/src/app
-    command: ["flask", "db", "upgrade"]
+    command: ["./scripts/wait-for-postgres.sh", "flask", "db", "upgrade"]
     environment:
       - FLASK_ENV=development
       - DB_HOST=pg
@@ -57,3 +59,4 @@ services:
       - REACT_APP_API_HOST=localhost
       - REACT_APP_API_PORT=5000
       - REACT_APP_API_PROTOCOL=http
+    restart: always
