@@ -1,7 +1,7 @@
 """create workweek_hustle table
 
 Revision ID: fc584ec8e573
-Revises: 
+Revises:
 Create Date: 2023-04-15 20:14:18.608315
 
 """
