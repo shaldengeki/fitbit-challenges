@@ -29,6 +29,7 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_DB=api_development
   frontend:
+    command: ["npm", "run", "build-and-start"]
     ports:
       - "5001:5001"
     volumes:
