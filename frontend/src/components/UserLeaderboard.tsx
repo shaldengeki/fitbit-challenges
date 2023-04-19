@@ -20,7 +20,7 @@ type UserLeaderboardListingEntryProps = {
     maxSteps: number;
 }
 
-const UserLeaderboardListingEntry = ({ user, maxSteps }: UserLeaderboardListingEntryProps) => {
+export const UserLeaderboardListingEntry = ({ user, maxSteps }: UserLeaderboardListingEntryProps) => {
     return (
         <div className="grid grid-cols-3 gap-0">
             <div className="col-span-2">{user.name}</div>
