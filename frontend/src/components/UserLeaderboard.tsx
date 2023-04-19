@@ -1,6 +1,5 @@
 import React from 'react';
 import ProgressBar from './ProgressBar';
-// import { useQuery, gql } from '@apollo/client';
 
 type UserLeaderboardHeaderProps = {
     title: string;
@@ -50,12 +49,6 @@ type UserLeaderboardProps = {
 }
 
 const UserLeaderboard = ({ challengeName }: UserLeaderboardProps) => {
-//   const { loading, error, data } = useQuery(TEST_QUERY);
-
-//   if (loading) return <p>Loading...</p>;
-
-//   if (error) return <p>Error : {error.message}</p>;
-
   return (
     <div className="bg-blue-200 p-2">
         <UserLeaderboardHeader title={challengeName} />
