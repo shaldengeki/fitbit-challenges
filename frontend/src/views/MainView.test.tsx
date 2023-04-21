@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import MainView from './MainView';
-import { TEST_QUERY } from './MainView';
+import MainView, { TEST_QUERY } from './MainView';
 import { MockedProvider } from '@apollo/react-testing';
 import React from 'react';
 
