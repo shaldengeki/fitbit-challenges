@@ -1,4 +1,4 @@
-"""create user_activity table
+"""create user_activities table
 
 Revision ID: eb246dcdc8c6
 Revises: fc584ec8e573
@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        "user_activity",
+        "user_activities",
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("created_at", sa.DateTime, default=now, nullable=False),
         sa.Column("updated_at", sa.DateTime, default=now, nullable=False),
@@ -31,11 +31,11 @@ def upgrade():
     )
 
     op.create_index(
-        "user_activity_user_record_date_created_at",
-        "user_activity",
+        "user_activities_user_record_date_created_at",
+        "user_activities",
         ["user", "record_date", "created_at"],
     )
 
 
 def downgrade():
-    op.drop_table("user_activity")
+    op.drop_table("user_activities")
