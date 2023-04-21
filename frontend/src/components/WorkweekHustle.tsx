@@ -2,39 +2,74 @@ import * as React from 'react';
 import { useQuery, gql } from '@apollo/client';
 
 import UserLeaderboard from './UserLeaderboard';
+import {UserData} from './UserLeaderboard';
 
-export const FETCH_WORKWEEK_HUSTLE_QUERY = gql`
-  query FetchChallenge($id: Int!) {
-        challenges(id: $id) {
-            id
-            users
-            createdAt
-            startAt
-            endAt
+export const FETCH_ACTIVITIES_QUERY = gql`
+    query FetchActivities($users: [String]!, $recordedAfter: Int!, $recordedBefore: Int!) {
+        activities(users: $users, recordedBefore: $recordedBefore, recordedAfter: $recordedAfter) {
+            user
+            recordDate
+            steps
+            activeMinutes
+            distanceKm
         }
     }
 `;
 
-type WorkweekHustleProps = {
-    id: number;
+type Activity = {
+    user: string;
+    recordDate: number;
+    steps: number;
+    activeMinutes: number;
+    distanceKm: number;
 }
 
-const WorkweekHustle = ({id}: WorkweekHustleProps) => {
-    const { loading, error, data } = useQuery(
-        FETCH_WORKWEEK_HUSTLE_QUERY,
-        {variables: { id }},
-     );
+type WorkweekHustleProps = {
+    id: number;
+    users: string[];
+    createdAt: number;
+    startAt: number;
+    endAt: number;
+}
 
-   if (loading) return <p>Loading...</p>;
+const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustleProps) => {
+   const fetchActivities = useQuery(
+        FETCH_ACTIVITIES_QUERY,
+        {
+            variables: {
+                users,
+                "recordedAfter": startAt,
+                "recordedBefore": endAt,
+            }
+        }
+   )
 
-   if (error) return <p>Error : {error.message}</p>;
+   if (fetchActivities.loading) return <p>Loading...</p>;
 
-   const challenge = data.challenges[0];
-   const users = challenge.users.split(",");
+   if (fetchActivities.error) return <p>Error : {fetchActivities.error.message}</p>;
+
+   const userData: UserData[] = fetchActivities.data.activities.map(
+        (activity: Activity) => {
+            return {
+                "name": activity.user,
+                "value": activity.steps,
+                "unit": "steps",
+            };
+        }
+    );
 
     return (
         <div>
-            <UserLeaderboard challengeName={"Workweek Hustle"} id={id} users={users} createdAt={challenge.createdAt} startAt={challenge.startAt} endAt={challenge.endAt} />
+            <UserLeaderboard
+                challengeName={"Workweek Hustle"}
+                id={id}
+                users={users}
+                userData={userData}
+                createdAt={createdAt}
+                startAt={startAt}
+                endAt={endAt}
+                unit={"steps"}
+            />
         </div>
     );
 };
