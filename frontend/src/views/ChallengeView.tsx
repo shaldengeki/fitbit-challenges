@@ -32,6 +32,12 @@ const ChallengeView = () => {
 
   if (error) return <p>Error : {error.message}</p>;
 
+  if (data.challenges.length < 1) {
+    return <p>Error: challenge could not be found!</p>;
+  } else if (data.challenges.length > 1) {
+    return <p>Error: multiple challenges with that ID were found!</p>
+  }
+
   const challenge = data.challenges[0];
   const users = challenge.users.split(",");
 
