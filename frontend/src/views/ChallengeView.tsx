@@ -42,7 +42,7 @@ const ChallengeView = () => {
   }
 
     return (
-      <div className="dark:bg-neutral-600 h-screen">
+      <div className="dark:bg-neutral-600 dark:text-slate-400 h-screen">
         <div className="container mx-auto">
           {innerContent}
         </div>
