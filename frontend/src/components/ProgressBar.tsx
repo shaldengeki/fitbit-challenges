@@ -6,8 +6,7 @@ type ProgressBarProps = {
 }
 
 const ProgressBar = ({ value, maximum }: ProgressBarProps) => {
-    // const inversePercent = 100 - (100 * value / maximum);
-    const inversePercent = 0;
+    const inversePercent = (maximum === 0) ? 100 : 100 - (100 * value / maximum);
     const barStyles = {
         "width": `${inversePercent}%`
     };
