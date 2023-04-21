@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
-import { TEST_QUERY } from './views/MainView';
+import MainView from './MainView';
+import { TEST_QUERY } from './MainView';
 import { MockedProvider } from '@apollo/react-testing';
 import React from 'react';
 
@@ -17,7 +17,7 @@ it('should render loading state initially', async () => {
   };
   render(
     <MockedProvider mocks={[testQueryMock]}>
-      <App />
+      <MainView />
     </MockedProvider>,
   );
   expect(await screen.findByText("Loading...")).toBeInTheDocument();
