@@ -36,9 +36,11 @@ const ChallengeView = () => {
   const users = challenge.users.split(",");
 
     return (
-    <div className="container mx-auto">
-        <WorkweekHustle id={id} users={users} createdAt={challenge.createdAt} startAt={challenge.startAt} endAt={challenge.endAt} />
-    </div>
+      <div className="dark:bg-neutral-600 h-screen">
+        <div className="container mx-auto">
+            <WorkweekHustle id={id} users={users} createdAt={challenge.createdAt} startAt={challenge.startAt} endAt={challenge.endAt} />
+        </div>
+      </div>
   )
 }
 

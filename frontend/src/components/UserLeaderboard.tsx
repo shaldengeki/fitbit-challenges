@@ -122,7 +122,7 @@ type UserLeaderboardProps = {
 
 const UserLeaderboard = ({ challengeName, id, users, userData, createdAt, startAt, endAt, unit }: UserLeaderboardProps) => {
   return (
-    <div className="bg-blue-200 p-2">
+    <div className="bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2">
         <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} />
         <UserLeaderboardListing users={users} userData={userData} unit={unit} />
     </div>

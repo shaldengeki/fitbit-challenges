@@ -59,18 +59,16 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
     );
 
     return (
-        <div>
-            <UserLeaderboard
-                challengeName={"Workweek Hustle"}
-                id={id}
-                users={users}
-                userData={userData}
-                createdAt={createdAt}
-                startAt={startAt}
-                endAt={endAt}
-                unit={"steps"}
-            />
-        </div>
+        <UserLeaderboard
+            challengeName={"Workweek Hustle"}
+            id={id}
+            users={users}
+            userData={userData}
+            createdAt={createdAt}
+            startAt={startAt}
+            endAt={endAt}
+            unit={"steps"}
+        />
     );
 };
 
