@@ -44,7 +44,39 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
 }
 
 export function getActivityLogs(activities: Activity[]): Activity[] {
-    return activities;
+    // Given a list of activity logs,
+    // compute the deltas and return them as a list of new activities.
+    return _.sortBy(
+        activities
+            .map((activity: Activity, _: number, allActivities: Activity[]) => {
+            // Fetch the prior activity recording for this date.
+            const priorActivities = allActivities.filter((priorActivity: Activity): boolean => {
+                return (activity.recordDate == priorActivity.recordDate && activity.user == priorActivity.user && activity.createdAt > priorActivity.createdAt);
+            }).sort((a: Activity, b: Activity): number => {
+                return a.createdAt > b.createdAt ? 1 : 0;
+            });
+            if (priorActivities.length < 1) {
+                // This is the first activity for the day.
+                return activity;
+            } else {
+                // There's a prior activity for the day.
+                const priorActivity = priorActivities[0];
+                return  {
+                    id: activity.id,
+                    user: activity.user,
+                    createdAt: activity.createdAt,
+                    recordDate: activity.recordDate,
+                    steps: (activity.steps - priorActivity.steps),
+                    activeMinutes: (activity.activeMinutes - priorActivity.activeMinutes),
+                    distanceKm: (activity.distanceKm - priorActivity.distanceKm)
+                }
+            }
+        }).filter((activity: Activity): boolean => {
+            // Filter out any activities with no delta.
+            return activity.steps > 0;
+        }),
+        'createdAt'
+    );
 }
 
 type WorkweekHustleProps = {

@@ -1,13 +1,23 @@
 import React from 'react';
 import Activity from '../types/Activity';
 
+function formatActivityDate(unixTime: number): string {
+    const dateObj = new Date(unixTime*1000);
+    return dateObj.toLocaleDateString(
+        undefined,
+        {
+            weekday: 'long',
+        }
+    )
+}
+
 type UserActivityLogEntryProps = {
     activity: Activity
 }
 
 const UserActivityLogEntry = ( {activity}: UserActivityLogEntryProps) => {
     return (
-        <div>{activity.user} recorded {activity.steps} steps</div>
+        <div>{activity.user} recorded {activity.steps} steps for {formatActivityDate(activity.recordDate)}</div>
     )
 }
 
@@ -17,8 +27,8 @@ type UserActivityLogProps = {
 
 const UserActivityLog = ({ data }: UserActivityLogProps) => {
     const entries = data.map(
-        (activity: Activity) => {
-            return <UserActivityLogEntry key={activity.id} activity={activity} />;
+        (activityDelta: Activity) => {
+            return <UserActivityLogEntry key={activityDelta.id} activity={activityDelta} />;
         }
     )
     return (
