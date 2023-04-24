@@ -5,7 +5,7 @@ import { useQuery, gql } from '@apollo/client';
 import Activity from '../types/Activity';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
-import {UserData} from './UserLeaderboard';
+import ActivityDataPoint from '../types/ActivityDataPoint';
 
 export const FETCH_ACTIVITIES_QUERY = gql`
     query FetchActivities($users: [String]!, $recordedAfter: Int!, $recordedBefore: Int!) {
@@ -72,7 +72,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
     // There might be many logs for a single date.
     // Retrieve just the latest log for a given date.
     const activities: Activity[] = fetchActivities.data.activities;
-    const leaderboardData: UserData[] = getLatestActivityPerUserPerDay(activities)
+    const leaderboardData: ActivityDataPoint[] = getLatestActivityPerUserPerDay(activities)
         .map((activity: Activity) => {
             return {
                 "name": activity.user,
@@ -84,12 +84,12 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
     const activitylogData: Activity[] = getActivityLogs(activities);
 
     return (
-        <div>
+        <div className="bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2">
             <UserLeaderboard
                 challengeName={"Workweek Hustle"}
                 id={id}
                 users={users}
-                userData={leaderboardData}
+                activityData={leaderboardData}
                 createdAt={createdAt}
                 startAt={startAt}
                 endAt={endAt}
