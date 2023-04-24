@@ -1,5 +1,6 @@
 import React from 'react';
 import Activity from '../types/Activity';
+import {formatDateDifference, getCurrentUnixTime} from '../DateUtils';
 
 function formatActivityDate(unixTime: number): string {
     const dateObj = new Date(unixTime*1000);
@@ -17,7 +18,14 @@ type UserActivityLogEntryProps = {
 
 const UserActivityLogEntry = ( {activity}: UserActivityLogEntryProps) => {
     return (
-        <div>{activity.user} recorded {activity.steps} steps for {formatActivityDate(activity.recordDate)}</div>
+        <div className="grid grid-cols-3 gap-0">
+            <div className="col-span-2">
+                {activity.user} recorded {activity.steps} steps for {formatActivityDate(activity.recordDate)}
+            </div>
+            <div className="col-span-1 text-right italic">
+                {formatDateDifference(getCurrentUnixTime() - activity.createdAt)} ago
+            </div>
+        </div>
     )
 }
 
