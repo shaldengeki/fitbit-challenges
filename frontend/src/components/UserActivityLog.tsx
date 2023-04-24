@@ -1,16 +1,31 @@
 import React from 'react';
 import Activity from '../types/Activity';
 
-type UserActivityLogProps = {
-    activities: Activity[]
+type UserActivityLogEntryProps = {
+    activity: Activity
 }
 
-const UserActivityLog = ({ activities }: UserActivityLogProps) => {
-  return (
-    <div>
-        Activity log here!
-    </div>
-  )
+const UserActivityLogEntry = ( {activity}: UserActivityLogEntryProps) => {
+    return (
+        <div>{activity.user} recorded {activity.steps} steps</div>
+    )
+}
+
+type UserActivityLogProps = {
+    data: Activity[]
+}
+
+const UserActivityLog = ({ data }: UserActivityLogProps) => {
+    const entries = data.map(
+        (activity: Activity) => {
+            return <UserActivityLogEntry key={activity.id} activity={activity} />;
+        }
+    )
+    return (
+        <div>
+            {entries}
+        </div>
+    )
 }
 
 export default UserActivityLog;

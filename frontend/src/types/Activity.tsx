@@ -1,4 +1,5 @@
 type Activity = {
+    id: number;
     user: string;
     createdAt: number;
     recordDate: number;

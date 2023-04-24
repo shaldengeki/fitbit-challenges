@@ -10,6 +10,7 @@ import ActivityDataPoint from '../types/ActivityDataPoint';
 export const FETCH_ACTIVITIES_QUERY = gql`
     query FetchActivities($users: [String]!, $recordedAfter: Int!, $recordedBefore: Int!) {
         activities(users: $users, recordedBefore: $recordedBefore, recordedAfter: $recordedAfter) {
+            id
             user
             createdAt
             recordDate
@@ -30,6 +31,7 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
         .values()
         .map((activities: Activity[]): Activity => {
             return _.maxBy(activities, 'createdAt') || {
+                'id': 0,
                 'user': 'unknown',
                 'createdAt': 0,
                 'recordDate': 0,
@@ -81,7 +83,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
             }
         });
 
-    const activitylogData: Activity[] = getActivityLogs(activities);
+    const activityLogData: Activity[] = getActivityLogs(activities);
 
     return (
         <div className="bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2">
@@ -95,7 +97,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
                 endAt={endAt}
                 unit={"steps"}
             />
-            <UserActivityLog activities={activitylogData} />
+            <UserActivityLog data={activityLogData} />
         </div>
     );
 };

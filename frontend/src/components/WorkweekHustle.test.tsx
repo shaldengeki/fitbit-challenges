@@ -66,8 +66,8 @@ it('should render when no activities exist', async () => {
         data: {
           activities: [
             // User has two records for day 0, one with 1 step, and one with 2 steps.
-            {'user': 'foo', 'createdAt': 0, 'recordDate': 0, 'steps': 1, 'activeMinutes': 1, 'distanceKm': 1},
-            {'user': 'foo', 'createdAt': 1, 'recordDate': 0, 'steps': 2, 'activeMinutes': 2, 'distanceKm': 2},
+            {'id': 1, 'user': 'foo', 'createdAt': 0, 'recordDate': 0, 'steps': 1, 'activeMinutes': 1, 'distanceKm': 1},
+            {'id': 2, 'user': 'foo', 'createdAt': 1, 'recordDate': 0, 'steps': 2, 'activeMinutes': 2, 'distanceKm': 2},
           ]
         }
       }
