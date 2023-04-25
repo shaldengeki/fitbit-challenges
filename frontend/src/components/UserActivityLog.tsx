@@ -27,7 +27,7 @@ const UserActivityLogEntry = ( {delta, editHook}: UserActivityLogEntryProps) => 
             <div className="col-span-1 text-right italic">
                 <span>
                     {formatDateDifference(getCurrentUnixTime() - delta.createdAt)} ago
-                    <a onClick={() => editHook(delta as Activity)}>✏️</a>
+                    <button onClick={() => editHook(delta as Activity)}>✏️</button>
                 </span>
             </div>
         </div>
