@@ -109,17 +109,23 @@ describe('getActivityLogs', () => {
                 createdAt: 0,
                 recordDate: 0,
                 steps: 1,
+                stepsDelta: 1,
                 activeMinutes: 1,
-                distanceKm: 1
+                activeMinutesDelta: 1,
+                distanceKm: 1,
+                distanceKmDelta: 1
             },
             {
                 id: 1,
                 user: 'foo',
                 createdAt: 1,
                 recordDate: 0,
-                steps: 1,
-                activeMinutes: 1,
-                distanceKm: 1
+                steps: 2,
+                stepsDelta: 1,
+                activeMinutes: 2,
+                activeMinutesDelta: 1,
+                distanceKm: 2,
+                distanceKmDelta: 1
             },
         ]);
     });
@@ -150,8 +156,11 @@ describe('getActivityLogs', () => {
                 createdAt: 0,
                 recordDate: 0,
                 steps: 1,
+                stepsDelta: 1,
                 activeMinutes: 1,
-                distanceKm: 1
+                activeMinutesDelta: 1,
+                distanceKm: 1,
+                distanceKmDelta: 1
             },
         ]);
     });
@@ -191,26 +200,35 @@ describe('getActivityLogs', () => {
                 createdAt: 0,
                 recordDate: 0,
                 steps: 1,
+                stepsDelta: 1,
                 activeMinutes: 1,
-                distanceKm: 1
+                activeMinutesDelta: 1,
+                distanceKm: 1,
+                distanceKmDelta: 1,
             },
             {
                 id: 2,
                 user: 'foo',
                 createdAt: 1,
                 recordDate: 0,
-                steps: 1,
-                activeMinutes: 1,
-                distanceKm: 1
+                steps: 2,
+                stepsDelta: 1,
+                activeMinutes: 2,
+                activeMinutesDelta: 1,
+                distanceKm: 2,
+                distanceKmDelta: 1,
             },
             {
                 id: 3,
                 user: 'foo',
                 createdAt: 2,
                 recordDate: 0,
-                steps: 1,
-                activeMinutes: 1,
-                distanceKm: 1
+                steps: 3,
+                stepsDelta: 1,
+                activeMinutes: 3,
+                activeMinutesDelta: 1,
+                distanceKm: 3,
+                distanceKmDelta: 1,
             },
         ]);
         expect(getActivityLogs([
@@ -249,25 +267,34 @@ describe('getActivityLogs', () => {
                 recordDate: 0,
                 steps: 1,
                 activeMinutes: 1,
-                distanceKm: 1
+                distanceKm: 1,
+                stepsDelta: 1,
+                activeMinutesDelta: 1,
+                distanceKmDelta: 1,
             },
             {
                 id: 2,
                 user: 'foo',
                 createdAt: 1,
                 recordDate: 0,
-                steps: 1,
-                activeMinutes: 1,
-                distanceKm: 1
+                steps: 2,
+                activeMinutes: 2,
+                distanceKm: 2,
+                stepsDelta: 1,
+                activeMinutesDelta: 1,
+                distanceKmDelta: 1,
             },
             {
                 id: 3,
                 user: 'foo',
                 createdAt: 2,
                 recordDate: 0,
-                steps: 1,
-                activeMinutes: 1,
-                distanceKm: 1
+                steps: 3,
+                activeMinutes: 3,
+                distanceKm: 3,
+                stepsDelta: 1,
+                activeMinutesDelta: 1,
+                distanceKmDelta: 1,
             },
         ]);
     });

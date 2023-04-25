@@ -62,7 +62,7 @@ const UserActivityLog = ({ users, deltas, startAt, endAt }: UserActivityLogProps
                 {entries}
             </div>
             <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
-                <UserActivityForm users={users} startAt={startAt} endAt={endAt} editedActivity={editedActivity} />
+                <UserActivityForm users={users} startAt={startAt} endAt={endAt} editedActivity={editedActivity} editActivityHook={setEditedActivity} />
             </div>
         </>
     )

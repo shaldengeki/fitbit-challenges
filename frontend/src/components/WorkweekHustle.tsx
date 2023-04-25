@@ -59,9 +59,9 @@ export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
                 // This is the first activity for the day.
                 return {
                     ...activity,
-                    stepsDelta: 0,
-                    activeMinutesDelta: 0,
-                    distanceKmDelta: 0
+                    stepsDelta: activity.steps,
+                    activeMinutesDelta: activity.activeMinutes,
+                    distanceKmDelta: activity.distanceKm
                 };
             } else {
                 // There's a prior activity for the day.

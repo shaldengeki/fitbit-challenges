@@ -115,9 +115,10 @@ type UserActivityFormProps = {
     startAt: number
     endAt: number
     editedActivity: Activity
+    editActivityHook: Function
 }
 
-const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivityFormProps) => {
+const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityHook }: UserActivityFormProps) => {
     const [
         createUserActivity,
         {
@@ -173,14 +174,9 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivit
 
     const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
 
-    let recordDateNode: any;
-    let userNode: any;
-    let stepsNode: any;
-    let idNode: any;
-
     const id = (editedActivity.id === 0) ? 0 : editedActivity.id;
-    const date = (editedActivity.id === 0) ? getDate() : getDate(editedActivity.recordDate);
-    const selectedUser = (editedActivity.id === 0) ? "" : editedActivity.user;
+    const date = (editedActivity.recordDate === 0) ? getDate() : getDate(editedActivity.recordDate);
+    const selectedUser = (editedActivity.user === "") ? "" : editedActivity.user;
     const userElements = users.map((user) => {
         if (user === selectedUser) {
             return <option key={user} value={user} selected={true}>{user}</option>
@@ -188,33 +184,28 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivit
             return <option key={user} value={user}>{user}</option>
         }
     });
-    const steps = (editedActivity.id === 0) ? 0 : editedActivity.steps;
+    const steps = (editedActivity.steps === 0) ? 0 : editedActivity.steps;
 
     return <>
         <form
             className="space-x-1"
             onSubmit={e => {
                 e.preventDefault();
-                const enteredRecordDate = recordDateNode ? Date.parse(recordDateNode.value) / 1000 : 0;
-                const enteredUser = userNode ? userNode.value : "";
-                const enteredSteps = parseInt(stepsNode ? stepsNode.value : "0", 10);
-                const enteredId = parseInt(idNode ? idNode.value : "0", 10);
-                console.log("enteredId", enteredId);
-                if (enteredId !== 0 && !isNaN(enteredId)) {
+                if (id !== 0) {
                     updateUserActivity({
                         variables: {
-                            id: enteredId,
-                            recordDate: enteredRecordDate,
-                            user: enteredUser,
-                            steps: enteredSteps
+                            id: id,
+                            recordDate: date,
+                            user: selectedUser,
+                            steps: steps
                         }
                     })
                 } else {
                     createUserActivity({
                         variables: {
-                            recordDate: enteredRecordDate,
-                            user: enteredUser,
-                            steps: enteredSteps
+                            recordDate: date,
+                            user: selectedUser,
+                            steps: steps
                         }
                     })
                 }
@@ -224,35 +215,46 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivit
                 name="id"
                 hidden={true}
                 value={id}
-                ref={node => {
-                    idNode = node;
-                }}
+                readOnly={true}
             />
             <input
                 className="rounded p-0.5"
                 name="recordDate"
                 type="date"
-                ref={node => {
-                    recordDateNode = node;
-                }}
                 value={date}
+                onChange={(e) => {
+                    const updatedActivity = {
+                        ...editedActivity,
+                        recordDate: Date.parse(e.target.value) / 1000
+                    }
+                    editActivityHook(updatedActivity)
+                }}
                 max={getDate(maxDate)}
                 min={getDate(startAt)}
             />
             <select
                 className="rounded p-0.5"
                 name="user"
-                ref={node => {
-                    userNode = node;
-                }}>
+                onChange={(e) => {
+                    const updatedActivity = {
+                        ...editedActivity,
+                        user: e.target.value
+                    }
+                    editActivityHook(updatedActivity)
+                }}
+            >
                 {userElements}
             </select>
             <input
                 className="rounded p-0.5 w-40"
                 name="steps"
                 type='number'
-                ref={node => {
-                    stepsNode = node;
+                onChange={(e) => {
+                    const updatedActivity = {
+                        ...editedActivity,
+                        steps: parseInt(e.target.value)
+                    }
+                    editActivityHook(updatedActivity)
                 }}
                 value={steps}
                 placeholder="Today's total steps"
