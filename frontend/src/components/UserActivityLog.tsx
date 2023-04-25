@@ -3,8 +3,8 @@ import Activity, {ActivityDelta} from '../types/Activity';
 import {formatDateDifference, getCurrentUnixTime} from '../DateUtils';
 import UserActivityForm from './UserActivityForm';
 
-function formatActivityDate(unixTime: number): string {
-    const dateObj = new Date(unixTime*1000);
+function formatActivityDate(recordDate: string): string {
+    const dateObj = new Date(recordDate + "T00:00:00");
     return dateObj.toLocaleDateString(
         undefined,
         {
@@ -46,7 +46,7 @@ const UserActivityLog = ({ users, deltas, startAt, endAt }: UserActivityLogProps
         id: 0,
         user: '',
         createdAt: 0,
-        recordDate: 0,
+        recordDate: '',
         steps: 0,
         activeMinutes: 0,
         distanceKm: 0,

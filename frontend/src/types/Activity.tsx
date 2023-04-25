@@ -2,7 +2,7 @@ type Activity = {
     id: number;
     user: string;
     createdAt: number;
-    recordDate: number;
+    recordDate: string;
     steps: number;
     activeMinutes: number;
     distanceKm: number;
@@ -12,7 +12,7 @@ export type ActivityDelta = {
     id: number;
     user: string;
     createdAt: number;
-    recordDate: number;
+    recordDate: string;
     steps: number;
     stepsDelta: number;
     activeMinutes: number;

@@ -25,7 +25,7 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
     return _.chain(activities)
         .groupBy(
             (activity: Activity) : string => {
-                return activity.user + "|" + activity.recordDate.toString();
+                return activity.user + "|" + activity.recordDate;
             }
         )
         .values()
@@ -34,7 +34,7 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
                 'id': 0,
                 'user': 'unknown',
                 'createdAt': 0,
-                'recordDate': 0,
+                'recordDate': '',
                 'steps': 0,
                 'activeMinutes': 0,
                 'distanceKm': 0,

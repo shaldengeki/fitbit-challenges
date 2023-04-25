@@ -59,13 +59,17 @@ function padDate(date: number): string {
 function getDate(time?: number): string {
     let currTime = new Date();
     if (time !== undefined) {
-        const localeDate = new Date(time * 1000);
-        currTime = new Date(localeDate.getUTCFullYear(), localeDate.getUTCMonth(), localeDate.getUTCDate());
+        currTime = new Date(0);
+        currTime.setUTCSeconds(time);
     }
     const formattedMonth = padDate(currTime.getMonth() + 1);
     const formattedDate = padDate(currTime.getDate());
 
     return currTime.getFullYear() + "-" + (formattedMonth) + "-" + formattedDate;
+}
+
+function convertDateStringToEpochTime(dateString: string): number {
+    return new Date(dateString + "T00:00:00").getTime() / 1000;
 }
 
 
@@ -176,7 +180,7 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
     const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
 
     const id = (editedActivity.id === 0) ? 0 : editedActivity.id;
-    const date = (editedActivity.recordDate === 0) ? getCurrentUnixTime() : editedActivity.recordDate;
+    const date = (editedActivity.recordDate === "") ? getDate() : editedActivity.recordDate;
     const selectedUser = (editedActivity.user === "") ? users[0] : editedActivity.user;
     const userElements = users.map((user) => {
         if (user === selectedUser) {
@@ -193,18 +197,20 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
             onSubmit={e => {
                 e.preventDefault();
                 if (id !== 0) {
+                    console.log("in update hook", date)
                     updateUserActivity({
                         variables: {
                             id: id,
-                            recordDate: date,
+                            recordDate: convertDateStringToEpochTime(date),
                             user: selectedUser,
                             steps: steps
                         }
                     })
                 } else {
+                    console.log("in create hook", date);
                     createUserActivity({
                         variables: {
-                            recordDate: date,
+                            recordDate: convertDateStringToEpochTime(date),
                             user: selectedUser,
                             steps: steps
                         }
@@ -222,13 +228,11 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
                 className="rounded p-0.5"
                 name="recordDate"
                 type="date"
-                value={getDate(date)}
+                value={date}
                 onChange={(e) => {
-                    const dateObj = new Date(e.target.value + "T00:00:00")
-                    console.log("date change", dateObj, dateObj.getTime() / 1000);
                     const updatedActivity = {
                         ...editedActivity,
-                        recordDate: dateObj.getTime() / 1000,
+                        recordDate: e.target.value,
                     }
                     editActivityHook(updatedActivity)
                 }}
