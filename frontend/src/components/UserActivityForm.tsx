@@ -171,6 +171,7 @@ const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) 
     let recordDate: any;
     let user: any;
     let steps: any;
+    let idNode: any;
 
     if (createUserActivityLoading || updateUserActivityLoading) {
         return <p>Loading...</p>
@@ -187,15 +188,29 @@ const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) 
                 const enteredRecordDate = recordDate ? Date.parse(recordDate.value) / 1000 : 0;
                 const enteredUser = user ? user.value : "";
                 const enteredSteps = parseInt(steps ? steps.value : "0", 10);
-                createUserActivity({
-                    variables: {
-                        recordDate: enteredRecordDate,
-                        user: enteredUser,
-                        steps: enteredSteps
-                    }
-                })
+                const enteredId = parseInt(idNode ? idNode.value : "0", 10);
+                console.log("enteredId", enteredId);
+                if (enteredId !== 0 && !isNaN(enteredId)) {
+                    // update an existing record.
+                    return;
+                } else {
+                    createUserActivity({
+                        variables: {
+                            recordDate: enteredRecordDate,
+                            user: enteredUser,
+                            steps: enteredSteps
+                        }
+                    })
+                }
             }}
         >
+            <input
+                hidden={true}
+                value={id}
+                ref={node => {
+                    idNode = node;
+                }}
+            />
             <input
                 className="rounded p-0.5"
                 type="date"
