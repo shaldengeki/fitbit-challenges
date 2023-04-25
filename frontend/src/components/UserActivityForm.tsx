@@ -1,5 +1,4 @@
 import React from 'react';
-import Activity from '../types/Activity';
 import { useMutation, gql } from '@apollo/client';
 import {FETCH_ACTIVITIES_QUERY} from './WorkweekHustle';
 import {getCurrentUnixTime} from '../DateUtils';
@@ -44,16 +43,24 @@ function getDate(time?: number): string {
 }
 
 type UserActivityFormProps = {
+    users: string[]
     startAt: number
     endAt: number
 }
 
-const UserActivityForm = ({ startAt, endAt }: UserActivityFormProps) => {
+const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
     const [createUserActivity, {data, loading, error, reset}] = useMutation(
         CREATE_USER_ACTIVITY_MUTATION,
         {
             refetchQueries: [
-                {query: FETCH_ACTIVITIES_QUERY},
+                {
+                    query: FETCH_ACTIVITIES_QUERY,
+                    variables: {
+                        users,
+                        recordedAfter: startAt,
+                        recordedBefore: endAt,
+                    }
+                },
                 'FetchActivities'
             ]
         }
@@ -72,14 +79,15 @@ const UserActivityForm = ({ startAt, endAt }: UserActivityFormProps) => {
         reset()
     }
     else {
-        console.log("Data", data);
+        const userElements = users.map((user) => {
+            return <option key={user} value={user}>{user}</option>
+        });
+
         innerContent = (
             <form
                 onSubmit={e => {
                     e.preventDefault();
-                    console.log("recordDate", recordDate.value);
                     const enteredRecordDate = recordDate ? Date.parse(recordDate.value) / 1000 : 0;
-                    console.log("enteredRecordDate", enteredRecordDate);
                     const enteredUser = user ? user.value : "";
                     const enteredSteps = parseInt(steps ? steps.value : "0", 10);
                     createUserActivity({
@@ -99,15 +107,17 @@ const UserActivityForm = ({ startAt, endAt }: UserActivityFormProps) => {
                     max={getDate(maxDate)}
                     min={getDate(startAt)}
                 />
-                <input
+                <select
                     ref={node => {
                         user = node;
-                    }}
-                />
+                    }}>
+                    {userElements}
+                </select>
                 <input
                     ref={node => {
                         steps = node;
                     }}
+                    placeholder="Today's total step count"
                 />
                 <button type="submit">Log activity</button>
             </form>
