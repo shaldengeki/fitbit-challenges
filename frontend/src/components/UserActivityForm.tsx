@@ -197,7 +197,6 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
             onSubmit={e => {
                 e.preventDefault();
                 if (id !== 0) {
-                    console.log("in update hook", date)
                     updateUserActivity({
                         variables: {
                             id: id,
@@ -207,7 +206,6 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
                         }
                     })
                 } else {
-                    console.log("in create hook", date);
                     createUserActivity({
                         variables: {
                             recordDate: convertDateStringToEpochTime(date),
