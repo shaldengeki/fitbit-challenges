@@ -2,6 +2,7 @@ import React from 'react';
 import { useMutation, gql } from '@apollo/client';
 import {FETCH_ACTIVITIES_QUERY} from './WorkweekHustle';
 import {getCurrentUnixTime} from '../DateUtils';
+import Activity from '../types/Activity';
 
 const CREATE_USER_ACTIVITY_MUTATION = gql`
     mutation CreateUserActivity(
@@ -110,13 +111,13 @@ const MutationSuccessDialog = ({ reset }: MutationSuccessDialogProps) => {
 }
 
 type UserActivityFormProps = {
-    id?: number
     users: string[]
     startAt: number
     endAt: number
+    editedActivity: Activity
 }
 
-const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) => {
+const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivityFormProps) => {
     const [
         createUserActivity,
         {
@@ -166,28 +167,37 @@ const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) 
         }
     );
 
-    const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
-
-    let recordDate: any;
-    let user: any;
-    let steps: any;
-    let idNode: any;
-
     if (createUserActivityLoading || updateUserActivityLoading) {
         return <p>Loading...</p>
     }
+
+    const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
+
+    let recordDateNode: any;
+    let userNode: any;
+    let stepsNode: any;
+    let idNode: any;
+
+    const id = (editedActivity.id === 0) ? 0 : editedActivity.id;
+    const date = (editedActivity.id === 0) ? getDate() : getDate(editedActivity.recordDate);
+    const selectedUser = (editedActivity.id === 0) ? "" : editedActivity.user;
     const userElements = users.map((user) => {
-        return <option key={user} value={user}>{user}</option>
+        if (user === selectedUser) {
+            return <option key={user} value={user} selected={true}>{user}</option>
+        } else {
+            return <option key={user} value={user}>{user}</option>
+        }
     });
+    const steps = (editedActivity.id === 0) ? 0 : editedActivity.steps;
 
     return <>
         <form
             className="space-x-1"
             onSubmit={e => {
                 e.preventDefault();
-                const enteredRecordDate = recordDate ? Date.parse(recordDate.value) / 1000 : 0;
-                const enteredUser = user ? user.value : "";
-                const enteredSteps = parseInt(steps ? steps.value : "0", 10);
+                const enteredRecordDate = recordDateNode ? Date.parse(recordDateNode.value) / 1000 : 0;
+                const enteredUser = userNode ? userNode.value : "";
+                const enteredSteps = parseInt(stepsNode ? stepsNode.value : "0", 10);
                 const enteredId = parseInt(idNode ? idNode.value : "0", 10);
                 console.log("enteredId", enteredId);
                 if (enteredId !== 0 && !isNaN(enteredId)) {
@@ -221,16 +231,16 @@ const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) 
                 className="rounded p-0.5"
                 type="date"
                 ref={node => {
-                    recordDate = node;
+                    recordDateNode = node;
                 }}
-                defaultValue={getDate()}
+                value={date}
                 max={getDate(maxDate)}
                 min={getDate(startAt)}
             />
             <select
                 className="rounded p-0.5"
                 ref={node => {
-                    user = node;
+                    userNode = node;
                 }}>
                 {userElements}
             </select>
@@ -238,8 +248,9 @@ const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) 
                 type='number'
                 className="rounded p-0.5 w-40"
                 ref={node => {
-                    steps = node;
+                    stepsNode = node;
                 }}
+                value={steps}
                 placeholder="Today's total steps"
             />
             <button
