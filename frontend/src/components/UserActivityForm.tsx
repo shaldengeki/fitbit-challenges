@@ -2,6 +2,7 @@ import React from 'react';
 import Activity from '../types/Activity';
 import { useMutation, gql } from '@apollo/client';
 import {FETCH_ACTIVITIES_QUERY} from './WorkweekHustle';
+import {getCurrentUnixTime} from '../DateUtils';
 
 const CREATE_USER_ACTIVITY_MUTATION = gql`
     mutation CreateUserActivity(
@@ -33,11 +34,9 @@ function padDate(date: number): string {
 
 function getDate(time?: number): string {
     let currTime = new Date();
-    console.log("time", time)
     if (time !== undefined) {
         currTime = new Date(time * 1000);
     }
-    console.log("currTime", currTime)
     const formattedMonth = padDate(currTime.getMonth() + 1);
     const formattedDate = padDate(currTime.getDate());
 
@@ -59,6 +58,8 @@ const UserActivityForm = ({ startAt, endAt }: UserActivityFormProps) => {
             ]
         }
     );
+
+    const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
 
     let recordDate: any;
     let user: any;
@@ -95,7 +96,7 @@ const UserActivityForm = ({ startAt, endAt }: UserActivityFormProps) => {
                         recordDate = node;
                     }}
                     defaultValue={getDate()}
-                    max={getDate(endAt)}
+                    max={getDate(maxDate)}
                     min={getDate(startAt)}
                 />
                 <input
