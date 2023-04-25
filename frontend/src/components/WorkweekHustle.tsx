@@ -75,7 +75,7 @@ export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
             }
         }).filter((delta: ActivityDelta): boolean => {
             // Filter out any activities with no delta.
-            return delta.stepsDelta > 0 && delta.steps > 0;
+            return delta.stepsDelta !== 0;
         }),
         'createdAt'
     );

@@ -59,7 +59,8 @@ function padDate(date: number): string {
 function getDate(time?: number): string {
     let currTime = new Date();
     if (time !== undefined) {
-        currTime = new Date(time * 1000);
+        const localeDate = new Date(time * 1000);
+        currTime = new Date(localeDate.getUTCFullYear(), localeDate.getUTCMonth(), localeDate.getUTCDate());
     }
     const formattedMonth = padDate(currTime.getMonth() + 1);
     const formattedDate = padDate(currTime.getDate());
@@ -175,11 +176,11 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
     const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
 
     const id = (editedActivity.id === 0) ? 0 : editedActivity.id;
-    const date = (editedActivity.recordDate === 0) ? getDate() : getDate(editedActivity.recordDate);
-    const selectedUser = (editedActivity.user === "") ? "" : editedActivity.user;
+    const date = (editedActivity.recordDate === 0) ? getCurrentUnixTime() : editedActivity.recordDate;
+    const selectedUser = (editedActivity.user === "") ? users[0] : editedActivity.user;
     const userElements = users.map((user) => {
         if (user === selectedUser) {
-            return <option key={user} value={user} selected={true}>{user}</option>
+            return <option key={user} value={user}>{user}</option>
         } else {
             return <option key={user} value={user}>{user}</option>
         }
@@ -221,11 +222,13 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
                 className="rounded p-0.5"
                 name="recordDate"
                 type="date"
-                value={date}
+                value={getDate(date)}
                 onChange={(e) => {
+                    const dateObj = new Date(e.target.value + "T00:00:00")
+                    console.log("date change", dateObj, dateObj.getTime() / 1000);
                     const updatedActivity = {
                         ...editedActivity,
-                        recordDate: Date.parse(e.target.value) / 1000
+                        recordDate: dateObj.getTime() / 1000,
                     }
                     editActivityHook(updatedActivity)
                 }}
@@ -235,6 +238,7 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
             <select
                 className="rounded p-0.5"
                 name="user"
+                value={selectedUser}
                 onChange={(e) => {
                     const updatedActivity = {
                         ...editedActivity,
