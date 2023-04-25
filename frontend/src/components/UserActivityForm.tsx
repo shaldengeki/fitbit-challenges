@@ -23,6 +23,30 @@ const CREATE_USER_ACTIVITY_MUTATION = gql`
         }
     }
 `
+
+const UPDATE_USER_ACTIVITY_MUTATION = gql`
+    mutation UpdateUserActivity(
+        $id:Int!,
+        $user:String!,
+        $recordDate:Int!,
+        $steps:Int!,
+    ) {
+        updateUserActivity(
+            id:$id,
+            recordDate:$recordDate,
+            user:$user,
+            steps:$steps,
+            activeMinutes:0,
+            distanceKm:0
+        ) {
+            id
+            recordDate
+            user
+            steps
+        }
+    }
+`
+
 function padDate(date: number): string {
     let formattedDate = "" + date;
     if (date < 10) {
@@ -42,15 +66,91 @@ function getDate(time?: number): string {
     return currTime.getFullYear() + "-" + (formattedMonth) + "-" + formattedDate;
 }
 
+
+type MutationErrorDialogProps = {
+    error: any
+    reset: Function
+}
+
+const MutationErrorDialog = ({ error, reset }: MutationErrorDialogProps) => {
+    return (
+        <dialog className="absolute inset-0" open>
+            <p className="text-lg font-bold">Error recording your steps:</p>
+            <p>{error.networkError?.message}</p>
+            <button
+                className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                value="cancel"
+                formMethod="dialog"
+                onClick={() => reset()}
+            >
+                Close
+            </button>
+        </dialog>
+    );
+}
+
+type MutationSuccessDialogProps = {
+    reset: Function
+}
+
+const MutationSuccessDialog = ({ reset }: MutationSuccessDialogProps) => {
+    return (
+        <dialog className="absolute inset-0" open>
+            <p className="text-lg font-bold">🎉Activity logged!🎉</p>
+            <button
+                className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                value="cancel"
+                formMethod="dialog"
+                onClick={() => reset()}
+            >
+                Close
+            </button>
+        </dialog>
+    );
+}
+
 type UserActivityFormProps = {
+    id?: number
     users: string[]
     startAt: number
     endAt: number
 }
 
-const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
-    const [createUserActivity, {data, loading, error, reset}] = useMutation(
+const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) => {
+    const [
+        createUserActivity,
+        {
+            data: createUserActivityData,
+            loading: createUserActivityLoading,
+            error: createUserActivityError,
+            reset: createUserActivityReset
+        }
+    ] = useMutation(
         CREATE_USER_ACTIVITY_MUTATION,
+        {
+            refetchQueries: [
+                {
+                    query: FETCH_ACTIVITIES_QUERY,
+                    variables: {
+                        users,
+                        recordedAfter: startAt,
+                        recordedBefore: endAt,
+                    }
+                },
+                'FetchActivities'
+            ]
+        }
+    );
+    const [
+        updateUserActivity,
+        {
+            data: updateUserActivityData,
+            loading: updateUserActivityLoading,
+            error: updateUserActivityError,
+            reset: updateUserActivityReset
+        }
+    ] = useMutation(
+        UPDATE_USER_ACTIVITY_MUTATION,
         {
             refetchQueries: [
                 {
@@ -72,7 +172,7 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
     let user: any;
     let steps: any;
 
-    if (loading) {
+    if (createUserActivityLoading || updateUserActivityLoading) {
         return <p>Loading...</p>
     }
     const userElements = users.map((user) => {
@@ -129,31 +229,30 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
             </button>
         </form>
         {
-            error && <dialog className="absolute inset-0" open>
-                <p className="text-lg font-bold">Error recording your steps:</p>
-                <p>{error.networkError?.message}</p>
-                <button
-                    className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
-                    value="cancel"
-                    formMethod="dialog"
-                    onClick={() => reset()}
-                >
-                    Close
-                </button>
-            </dialog>
+            createUserActivityError &&
+                <MutationErrorDialog
+                    error={createUserActivityError}
+                    reset={createUserActivityReset}
+                />
         }
         {
-            data && <dialog className="absolute inset-0" open>
-            <p className="text-lg font-bold">🎉Activity logged!🎉</p>
-            <button
-                className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
-                value="cancel"
-                formMethod="dialog"
-                onClick={() => reset()}
-            >
-                Close
-            </button>
-        </dialog>
+            updateUserActivityError &&
+                <MutationErrorDialog
+                    error={updateUserActivityError}
+                    reset={updateUserActivityReset}
+                />
+        }
+        {
+            createUserActivityData &&
+                <MutationSuccessDialog
+                    reset={createUserActivityReset}
+                />
+        }
+        {
+            updateUserActivityData &&
+                <MutationSuccessDialog
+                    reset={updateUserActivityReset}
+                />
         }
     </>;
 }
