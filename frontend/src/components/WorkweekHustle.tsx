@@ -58,30 +58,18 @@ export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
             if (priorActivities.length < 1) {
                 // This is the first activity for the day.
                 return {
-                    id: activity.id,
-                    user: activity.user,
-                    createdAt: activity.createdAt,
-                    recordDate: activity.recordDate,
-                    steps: activity.steps,
+                    ...activity,
                     stepsDelta: 0,
-                    activeMinutes: activity.activeMinutes,
                     activeMinutesDelta: 0,
-                    distanceKm: activity.distanceKm,
                     distanceKmDelta: 0
                 };
             } else {
                 // There's a prior activity for the day.
                 const priorActivity = priorActivities[0];
                 return  {
-                    id: activity.id,
-                    user: activity.user,
-                    createdAt: activity.createdAt,
-                    recordDate: activity.recordDate,
-                    steps: activity.steps,
+                    ...activity,
                     stepsDelta: (activity.steps - priorActivity.steps),
-                    activeMinutes: activity.activeMinutes,
                     activeMinutesDelta: (activity.activeMinutes - priorActivity.activeMinutes),
-                    distanceKm: activity.distanceKm,
                     distanceKmDelta: (activity.distanceKm - priorActivity.distanceKm)
                 }
             }
