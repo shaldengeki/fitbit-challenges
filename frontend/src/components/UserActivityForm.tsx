@@ -72,95 +72,90 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
     let user: any;
     let steps: any;
 
-    let innerContent = <div></div>;
-    if (loading) innerContent = <p>Loading...</p>
-    else if (data) {
-        // TODO: celebratory animation
-        reset();
+    if (loading) {
+        return <p>Loading...</p>
     }
-    else {
-        const userElements = users.map((user) => {
-            return <option key={user} value={user}>{user}</option>
-        });
+    const userElements = users.map((user) => {
+        return <option key={user} value={user}>{user}</option>
+    });
 
-        innerContent = (
-            <form
-                className="space-x-1"
-                onSubmit={e => {
-                    e.preventDefault();
-                    const enteredRecordDate = recordDate ? Date.parse(recordDate.value) / 1000 : 0;
-                    const enteredUser = user ? user.value : "";
-                    const enteredSteps = parseInt(steps ? steps.value : "0", 10);
-                    createUserActivity({
-                        variables: {
-                            recordDate: enteredRecordDate,
-                            user: enteredUser,
-                            steps: enteredSteps
-                        }
-                    })
+    return <>
+        <form
+            className="space-x-1"
+            onSubmit={e => {
+                e.preventDefault();
+                const enteredRecordDate = recordDate ? Date.parse(recordDate.value) / 1000 : 0;
+                const enteredUser = user ? user.value : "";
+                const enteredSteps = parseInt(steps ? steps.value : "0", 10);
+                createUserActivity({
+                    variables: {
+                        recordDate: enteredRecordDate,
+                        user: enteredUser,
+                        steps: enteredSteps
+                    }
+                })
+            }}
+        >
+            <input
+                className="rounded p-0.5"
+                type="date"
+                ref={node => {
+                    recordDate = node;
                 }}
+                defaultValue={getDate()}
+                max={getDate(maxDate)}
+                min={getDate(startAt)}
+            />
+            <select
+                className="rounded p-0.5"
+                ref={node => {
+                    user = node;
+                }}>
+                {userElements}
+            </select>
+            <input
+                type='number'
+                className="rounded p-0.5"
+                ref={node => {
+                    steps = node;
+                }}
+                placeholder="Today's total step count"
+            />
+            <button
+                className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                type="submit"
             >
-                <input
-                    className="rounded p-0.5"
-                    type="date"
-                    ref={node => {
-                        recordDate = node;
-                    }}
-                    defaultValue={getDate()}
-                    max={getDate(maxDate)}
-                    min={getDate(startAt)}
-                />
-                <select
-                    className="rounded p-0.5"
-                    ref={node => {
-                        user = node;
-                    }}>
-                    {userElements}
-                </select>
-                <input
-                    type='number'
-                    className="rounded p-0.5"
-                    ref={node => {
-                        steps = node;
-                    }}
-                    placeholder="Today's total step count"
-                />
+                Log activity
+            </button>
+        </form>
+        {
+            error && <dialog className="absolute inset-0" open>
+                <p className="text-lg font-bold">Error recording your steps:</p>
+                <p>{error.networkError?.message}</p>
                 <button
                     className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
-                    type="submit"
+                    value="cancel"
+                    formMethod="dialog"
+                    onClick={() => reset()}
                 >
-                    Log activity
+                    Close
                 </button>
-            </form>
-        );
-
-        if (error) {
-            // TODO: styling for modal
-            innerContent = (
-                <>
-                    <dialog className="absolute inset-0" open>
-                        <p className="text-lg font-bold">Error recording your steps:</p>
-                        <p>{error.networkError?.message}</p>
-                        <button
-                            className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
-                            value="cancel"
-                            formMethod="dialog"
-                            onClick={() => reset()}
-                        >
-                            Close
-                        </button>
-                    </dialog>
-                    {innerContent}
-                </>
-            )
+            </dialog>
         }
-    }
-
-    return (
-        <>
-            {innerContent}
-        </>
-    )
+        {
+            data && <dialog className="absolute inset-0" open>
+            <p className="text-lg font-bold">🎉Activity logged!🎉</p>
+            <button
+                className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                value="cancel"
+                formMethod="dialog"
+                onClick={() => reset()}
+            >
+                Close
+            </button>
+        </dialog>
+        }
+    </>;
 }
 
 export default UserActivityForm;
