@@ -74,9 +74,9 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
 
     let innerContent = <div></div>;
     if (loading) innerContent = <p>Loading...</p>
-    else if (error) return <p>Error!</p>
     else if (data) {
-        reset()
+        // TODO: celebratory animation
+        reset();
     }
     else {
         const userElements = users.map((user) => {
@@ -85,6 +85,7 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
 
         innerContent = (
             <form
+                className="space-x-1"
                 onSubmit={e => {
                     e.preventDefault();
                     const enteredRecordDate = recordDate ? Date.parse(recordDate.value) / 1000 : 0;
@@ -97,8 +98,10 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
                             steps: enteredSteps
                         }
                     })
-                }}>
+                }}
+            >
                 <input
+                    className="rounded p-0.5"
                     type="date"
                     ref={node => {
                         recordDate = node;
@@ -108,26 +111,55 @@ const UserActivityForm = ({ users, startAt, endAt }: UserActivityFormProps) => {
                     min={getDate(startAt)}
                 />
                 <select
+                    className="rounded p-0.5"
                     ref={node => {
                         user = node;
                     }}>
                     {userElements}
                 </select>
                 <input
+                    type='number'
+                    className="rounded p-0.5"
                     ref={node => {
                         steps = node;
                     }}
                     placeholder="Today's total step count"
                 />
-                <button type="submit">Log activity</button>
+                <button
+                    className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                    type="submit"
+                >
+                    Log activity
+                </button>
             </form>
         );
+
+        if (error) {
+            // TODO: styling for modal
+            innerContent = (
+                <>
+                    <dialog className="absolute inset-0" open>
+                        <p className="text-lg font-bold">Error recording your steps:</p>
+                        <p>{error.networkError?.message}</p>
+                        <button
+                            className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                            value="cancel"
+                            formMethod="dialog"
+                            onClick={() => reset()}
+                        >
+                            Close
+                        </button>
+                    </dialog>
+                    {innerContent}
+                </>
+            )
+        }
     }
 
     return (
-        <div>
+        <>
             {innerContent}
-        </div>
+        </>
     )
 }
 
