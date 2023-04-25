@@ -191,8 +191,14 @@ const UserActivityForm = ({ id, users, startAt, endAt }: UserActivityFormProps) 
                 const enteredId = parseInt(idNode ? idNode.value : "0", 10);
                 console.log("enteredId", enteredId);
                 if (enteredId !== 0 && !isNaN(enteredId)) {
-                    // update an existing record.
-                    return;
+                    updateUserActivity({
+                        variables: {
+                            id: enteredId,
+                            recordDate: enteredRecordDate,
+                            user: enteredUser,
+                            steps: enteredSteps
+                        }
+                    })
                 } else {
                     createUserActivity({
                         variables: {
