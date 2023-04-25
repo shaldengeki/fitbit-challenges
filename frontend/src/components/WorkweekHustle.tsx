@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash'
 import { useQuery, gql } from '@apollo/client';
 
-import Activity from '../types/Activity';
+import Activity, {ActivityDelta} from '../types/Activity';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
 import ActivityDataPoint from '../types/ActivityDataPoint';
@@ -43,7 +43,7 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
         .value();
 }
 
-export function getActivityLogs(activities: Activity[]): Activity[] {
+export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
     // Given a list of activity logs,
     // compute the deltas and return them as a list of new activities.
     return _.sortBy(
@@ -57,7 +57,18 @@ export function getActivityLogs(activities: Activity[]): Activity[] {
             });
             if (priorActivities.length < 1) {
                 // This is the first activity for the day.
-                return activity;
+                return {
+                    id: activity.id,
+                    user: activity.user,
+                    createdAt: activity.createdAt,
+                    recordDate: activity.recordDate,
+                    steps: activity.steps,
+                    stepsDelta: 0,
+                    activeMinutes: activity.activeMinutes,
+                    activeMinutesDelta: 0,
+                    distanceKm: activity.distanceKm,
+                    distanceKmDelta: 0
+                };
             } else {
                 // There's a prior activity for the day.
                 const priorActivity = priorActivities[0];
@@ -66,14 +77,17 @@ export function getActivityLogs(activities: Activity[]): Activity[] {
                     user: activity.user,
                     createdAt: activity.createdAt,
                     recordDate: activity.recordDate,
-                    steps: (activity.steps - priorActivity.steps),
-                    activeMinutes: (activity.activeMinutes - priorActivity.activeMinutes),
-                    distanceKm: (activity.distanceKm - priorActivity.distanceKm)
+                    steps: activity.steps,
+                    stepsDelta: (activity.steps - priorActivity.steps),
+                    activeMinutes: activity.activeMinutes,
+                    activeMinutesDelta: (activity.activeMinutes - priorActivity.activeMinutes),
+                    distanceKm: activity.distanceKm,
+                    distanceKmDelta: (activity.distanceKm - priorActivity.distanceKm)
                 }
             }
-        }).filter((activity: Activity): boolean => {
+        }).filter((delta: ActivityDelta): boolean => {
             // Filter out any activities with no delta.
-            return activity.steps > 0;
+            return delta.stepsDelta > 0 && delta.steps > 0;
         }),
         'createdAt'
     );
@@ -115,7 +129,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
             }
         });
 
-    const activityLogData: Activity[] = getActivityLogs(activities);
+    const activityLogData: ActivityDelta[] = getActivityLogs(activities);
 
     return (
         <div className="bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2 h-screen flex flex-col">
@@ -131,7 +145,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
                     unit={"steps"}
                 />
             </div>
-            <UserActivityLog users={users} data={activityLogData} startAt={startAt} endAt={endAt} />
+            <UserActivityLog users={users} deltas={activityLogData} startAt={startAt} endAt={endAt} />
         </div>
     );
 };

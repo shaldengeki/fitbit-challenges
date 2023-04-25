@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Activity from '../types/Activity';
+import Activity, {ActivityDelta} from '../types/Activity';
 import {formatDateDifference, getCurrentUnixTime} from '../DateUtils';
 import UserActivityForm from './UserActivityForm';
 
@@ -14,20 +14,20 @@ function formatActivityDate(unixTime: number): string {
 }
 
 type UserActivityLogEntryProps = {
-    activity: Activity
+    delta: ActivityDelta
     editHook: Function
 }
 
-const UserActivityLogEntry = ( {activity, editHook}: UserActivityLogEntryProps) => {
+const UserActivityLogEntry = ( {delta, editHook}: UserActivityLogEntryProps) => {
     return (
         <div className="grid grid-cols-3 gap-0">
             <div className="col-span-2">
-                {activity.user} recorded {activity.steps} steps for {formatActivityDate(activity.recordDate)}
+                {delta.user} recorded {delta.stepsDelta} steps for {formatActivityDate(delta.recordDate)}
             </div>
             <div className="col-span-1 text-right italic">
                 <span>
-                    {formatDateDifference(getCurrentUnixTime() - activity.createdAt)} ago
-                    <a onClick={() => editHook(activity)}>✏️</a>
+                    {formatDateDifference(getCurrentUnixTime() - delta.createdAt)} ago
+                    <a onClick={() => editHook(delta as Activity)}>✏️</a>
                 </span>
             </div>
         </div>
@@ -36,12 +36,12 @@ const UserActivityLogEntry = ( {activity, editHook}: UserActivityLogEntryProps) 
 
 type UserActivityLogProps = {
     users: string[]
-    data: Activity[]
+    deltas: ActivityDelta[]
     startAt: number
     endAt: number
 }
 
-const UserActivityLog = ({ users, data, startAt, endAt }: UserActivityLogProps) => {
+const UserActivityLog = ({ users, deltas, startAt, endAt }: UserActivityLogProps) => {
     const [editedActivity, setEditedActivity] = useState({
         id: 0,
         user: '',
@@ -51,9 +51,9 @@ const UserActivityLog = ({ users, data, startAt, endAt }: UserActivityLogProps) 
         activeMinutes: 0,
         distanceKm: 0,
     });
-    const entries = data.map(
-        (activityDelta: Activity) => {
-            return <UserActivityLogEntry key={activityDelta.id} activity={activityDelta} editHook={setEditedActivity} />;
+    const entries = deltas.map(
+        (delta: ActivityDelta) => {
+            return <UserActivityLogEntry key={delta.id} delta={delta} editHook={setEditedActivity} />;
         }
     )
     return (
