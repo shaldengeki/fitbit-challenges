@@ -134,7 +134,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
             </div>
             <UserActivityLog data={activityLogData} />
             <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
-                <UserActivityForm />
+                <UserActivityForm startAt={startAt} endAt={endAt} />
             </div>
         </div>
     );
