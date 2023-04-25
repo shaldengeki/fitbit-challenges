@@ -120,7 +120,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
 
     return (
         <div className="bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2 h-screen flex flex-col">
-            <div className="border-b-2 border-slate-50 mb-8 pb-4">
+            <div className="border-b-2 border-slate-50 dark:border-neutral-600 mb-8 pb-4">
                 <UserLeaderboard
                     challengeName={"Workweek Hustle"}
                     id={id}
@@ -133,7 +133,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
                 />
             </div>
             <UserActivityLog data={activityLogData} />
-            <div className="border-t-2 border-slate-50 mt-8 pt-4">
+            <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
                 <UserActivityForm />
             </div>
         </div>
