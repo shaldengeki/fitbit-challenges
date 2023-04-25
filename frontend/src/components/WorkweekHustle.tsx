@@ -6,7 +6,6 @@ import Activity from '../types/Activity';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
 import ActivityDataPoint from '../types/ActivityDataPoint';
-import UserActivityForm from './UserActivityForm';
 
 export const FETCH_ACTIVITIES_QUERY = gql`
     query FetchActivities($users: [String]!, $recordedAfter: Int!, $recordedBefore: Int!) {
@@ -132,10 +131,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
                     unit={"steps"}
                 />
             </div>
-            <UserActivityLog data={activityLogData} />
-            <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
-                <UserActivityForm users={users} startAt={startAt} endAt={endAt} />
-            </div>
+            <UserActivityLog users={users} data={activityLogData} startAt={startAt} endAt={endAt} />
         </div>
     );
 };
