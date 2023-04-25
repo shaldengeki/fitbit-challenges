@@ -221,6 +221,7 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivit
             }}
         >
             <input
+                name="id"
                 hidden={true}
                 value={id}
                 ref={node => {
@@ -229,6 +230,7 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivit
             />
             <input
                 className="rounded p-0.5"
+                name="recordDate"
                 type="date"
                 ref={node => {
                     recordDateNode = node;
@@ -239,14 +241,16 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity }: UserActivit
             />
             <select
                 className="rounded p-0.5"
+                name="user"
                 ref={node => {
                     userNode = node;
                 }}>
                 {userElements}
             </select>
             <input
-                type='number'
                 className="rounded p-0.5 w-40"
+                name="steps"
+                type='number'
                 ref={node => {
                     stepsNode = node;
                 }}
