@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Activity, {ActivityDelta} from '../types/Activity';
+import Activity, {ActivityDelta, EmptyActivity} from '../types/Activity';
 import {formatDateDifference, getCurrentUnixTime} from '../DateUtils';
 import UserActivityForm from './UserActivityForm';
 
@@ -42,15 +42,7 @@ type UserActivityLogProps = {
 }
 
 const UserActivityLog = ({ users, deltas, startAt, endAt }: UserActivityLogProps) => {
-    const [editedActivity, setEditedActivity] = useState({
-        id: 0,
-        user: '',
-        createdAt: 0,
-        recordDate: '',
-        steps: 0,
-        activeMinutes: 0,
-        distanceKm: 0,
-    });
+    const [editedActivity, setEditedActivity] = useState(EmptyActivity);
     const entries = deltas.map(
         (delta: ActivityDelta) => {
             return <UserActivityLogEntry key={delta.id} delta={delta} editHook={setEditedActivity} />;

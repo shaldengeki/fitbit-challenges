@@ -2,7 +2,7 @@ import React from 'react';
 import { useMutation, gql } from '@apollo/client';
 import {FETCH_ACTIVITIES_QUERY} from './WorkweekHustle';
 import {getCurrentUnixTime} from '../DateUtils';
-import Activity from '../types/Activity';
+import Activity, {EmptyActivity} from '../types/Activity';
 
 const CREATE_USER_ACTIVITY_MUTATION = gql`
     mutation CreateUserActivity(
@@ -270,6 +270,12 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
                 type="submit"
             >
                 Log activity
+            </button>
+            <button
+                className="p-0.5 rounded bg-slate-200 dark:bg-pink-900 dark:text-slate-400"
+                onClick={(e) => {e.preventDefault(); editActivityHook(EmptyActivity)}}
+            >
+                Cancel
             </button>
         </form>
         {
