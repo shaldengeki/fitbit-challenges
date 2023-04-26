@@ -269,7 +269,7 @@ const UserActivityForm = ({ users, startAt, endAt, editedActivity, editActivityH
                 className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
                 type="submit"
             >
-                Log activity
+                {(id === 0) ? "Log activity" : "Update"}
             </button>
             <button
                 className="p-0.5 rounded bg-slate-200 dark:bg-pink-900 dark:text-slate-400"
