@@ -1,4 +1,5 @@
 import React from 'react';
+import Confetti from './Confetti';
 import { useMutation, gql } from '@apollo/client';
 import {FETCH_ACTIVITIES_QUERY} from './WorkweekHustle';
 import {getCurrentUnixTime} from '../DateUtils';
@@ -101,17 +102,20 @@ type MutationSuccessDialogProps = {
 
 const MutationSuccessDialog = ({ reset }: MutationSuccessDialogProps) => {
     return (
-        <dialog className="absolute inset-0" open>
-            <p className="text-lg font-bold">🎉Activity logged!🎉</p>
-            <button
-                className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
-                value="cancel"
-                formMethod="dialog"
-                onClick={() => reset()}
-            >
-                Close
-            </button>
-        </dialog>
+        <>
+            <dialog className="absolute inset-0" open>
+                <p className="text-lg font-bold">🎉Activity logged!🎉</p>
+                <button
+                    className="p-0.5 rounded bg-teal-400 dark:bg-pink-900 dark:text-slate-400"
+                    value="cancel"
+                    formMethod="dialog"
+                    onClick={() => reset()}
+                >
+                    Close
+                </button>
+            </dialog>
+            <Confetti />
+        </>
     );
 }
 
