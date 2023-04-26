@@ -22,7 +22,7 @@ const UserActivityLogEntry = ( {delta, editHook}: UserActivityLogEntryProps) => 
     return (
         <div className="grid grid-cols-3 gap-0">
             <div className="col-span-2">
-                {delta.user} recorded {delta.stepsDelta} steps for {formatActivityDate(delta.recordDate)}
+                {delta.user} took {delta.stepsDelta} steps on {formatActivityDate(delta.recordDate)}
             </div>
             <div className="col-span-1 text-right italic text-sm">
                 <span>
