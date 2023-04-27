@@ -55,7 +55,8 @@ it('should handle when multiple challenges are found', async () => {
         "users": "a,b,c",
         "createdAt": 1,
         "startAt": 1,
-        "endAt": 1
+        "endAt": 1,
+        "activities": []
     }
     const testFetchWorkweekHustleQueryMock =   {
       request: {

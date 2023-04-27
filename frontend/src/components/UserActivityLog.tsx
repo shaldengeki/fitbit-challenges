@@ -35,13 +35,14 @@ const UserActivityLogEntry = ( {delta, editHook}: UserActivityLogEntryProps) => 
 }
 
 type UserActivityLogProps = {
+    challengeId: number
     users: string[]
     deltas: ActivityDelta[]
     startAt: number
     endAt: number
 }
 
-const UserActivityLog = ({ users, deltas, startAt, endAt }: UserActivityLogProps) => {
+const UserActivityLog = ({ challengeId, users, deltas, startAt, endAt }: UserActivityLogProps) => {
     const [editedActivity, setEditedActivity] = useState(EmptyActivity);
     const entries = deltas.map(
         (delta: ActivityDelta) => {
@@ -54,7 +55,7 @@ const UserActivityLog = ({ users, deltas, startAt, endAt }: UserActivityLogProps
                 {entries}
             </div>
             <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
-                <UserActivityForm users={users} startAt={startAt} endAt={endAt} editedActivity={editedActivity} editActivityHook={setEditedActivity} />
+                <UserActivityForm challengeId={challengeId} users={users} startAt={startAt} endAt={endAt} editedActivity={editedActivity} editActivityHook={setEditedActivity} />
             </div>
         </>
     )

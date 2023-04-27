@@ -87,27 +87,13 @@ type WorkweekHustleProps = {
     createdAt: number;
     startAt: number;
     endAt: number;
+    activities: Activity[];
 }
 
-const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustleProps) => {
-   const fetchActivities = useQuery(
-        FETCH_ACTIVITIES_QUERY,
-        {
-            variables: {
-                users,
-                "recordedAfter": startAt,
-                "recordedBefore": endAt,
-            }
-        }
-   )
-
-    if (fetchActivities.loading) return <p>Loading...</p>;
-
-    if (fetchActivities.error) return <p>Error : {fetchActivities.error.message}</p>;
-
+const WorkweekHustle = ({id, users, createdAt, startAt, endAt, activities}: WorkweekHustleProps) => {
     // There might be many logs for a single date.
     // Retrieve just the latest log for a given date.
-    const activities: Activity[] = fetchActivities.data.activities;
+    // const activities: Activity[] = fetchActivities.data.activities;
     const leaderboardData: ActivityDataPoint[] = getLatestActivityPerUserPerDay(activities)
         .map((activity: Activity) => {
             return {
@@ -133,7 +119,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt}: WorkweekHustlePr
                     unit={"steps"}
                 />
             </div>
-            <UserActivityLog users={users} deltas={activityLogData} startAt={startAt} endAt={endAt} />
+            <UserActivityLog challengeId={id} users={users} deltas={activityLogData} startAt={startAt} endAt={endAt} />
         </div>
     );
 };
