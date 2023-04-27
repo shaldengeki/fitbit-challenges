@@ -101,7 +101,6 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt, ended, sealAt, se
                     id={id}
                     users={users}
                     activityTotals={activityTotals}
-                    createdAt={createdAt}
                     startAt={startAt}
                     endAt={endAt}
                     ended={ended}

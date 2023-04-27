@@ -77,7 +77,6 @@ type UserLeaderboardProps = {
     id: number;
     users: string[];
     activityTotals: ActivityTotal[];
-    createdAt: number;
     startAt: number;
     endAt: number;
     ended: boolean;
@@ -86,7 +85,7 @@ type UserLeaderboardProps = {
     unit: string;
 }
 
-const UserLeaderboard = ({ challengeName, id, users, activityTotals, createdAt, startAt, endAt, unit }: UserLeaderboardProps) => {
+const UserLeaderboard = ({ challengeName, id, users, activityTotals, startAt, endAt, ended, sealAt, sealed, unit }: UserLeaderboardProps) => {
   return (
     <div>
         <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} />
