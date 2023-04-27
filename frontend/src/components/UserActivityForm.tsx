@@ -181,7 +181,7 @@ const UserActivityForm = ({ challengeId, users, startAt, endAt, editedActivity, 
     const maxDate = endAt > getCurrentUnixTime() ? getCurrentUnixTime() : endAt;
 
     const id = (editedActivity.id === 0) ? 0 : editedActivity.id;
-    const date = (editedActivity.recordDate === "") ? getDate() : editedActivity.recordDate;
+    const date = (editedActivity.recordDate === "") ? getDate(maxDate) : editedActivity.recordDate;
     const selectedUser = (editedActivity.user === "") ? users[0] : editedActivity.user;
     const userElements = users.map((user) => {
         if (user === selectedUser) {

@@ -110,7 +110,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt, ended, sealAt, se
                     unit={"steps"}
                 />
             </div>
-            <UserActivityLog challengeId={id} users={users} deltas={activityLogData} startAt={startAt} endAt={endAt} />
+            <UserActivityLog challengeId={id} users={users} deltas={activityLogData} startAt={startAt} endAt={endAt} sealed={sealed} />
         </div>
     );
 };

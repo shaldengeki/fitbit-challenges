@@ -40,9 +40,10 @@ type UserActivityLogProps = {
     deltas: ActivityDelta[]
     startAt: number
     endAt: number
+    sealed: boolean
 }
 
-const UserActivityLog = ({ challengeId, users, deltas, startAt, endAt }: UserActivityLogProps) => {
+const UserActivityLog = ({ challengeId, users, deltas, startAt, endAt, sealed }: UserActivityLogProps) => {
     const [editedActivity, setEditedActivity] = useState(EmptyActivity);
     const entries = deltas.map(
         (delta: ActivityDelta) => {
@@ -54,9 +55,9 @@ const UserActivityLog = ({ challengeId, users, deltas, startAt, endAt }: UserAct
             <div className="grow overflow-y-auto">
                 {entries}
             </div>
-            <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
+            { !sealed && <div className="border-t-2 border-slate-50 dark:border-neutral-600 mt-8 pt-4">
                 <UserActivityForm challengeId={challengeId} users={users} startAt={startAt} endAt={endAt} editedActivity={editedActivity} editActivityHook={setEditedActivity} />
-            </div>
+            </div>}
         </>
     )
 }
