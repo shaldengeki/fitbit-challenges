@@ -23,7 +23,7 @@ const ChallengesListingView = () => {
 
     let innerContent = <p></p>;
     if (loading) innerContent = <p>Loading...</p>;
-    else if (error) innerContent = <p>Error : {error.message}</p>;
+    else if (error) innerContent = <p>Error: {error.message}</p>;
     else if (data.challenges.length < 1) {
         innerContent = <p>Error: challenge could not be found!</p>;
     } else if (data.challenges.length > 1) {
@@ -34,7 +34,7 @@ const ChallengesListingView = () => {
 
     return (
         <div className="dark:bg-neutral-600 dark:text-slate-400 h-screen">
-            <div className="container mx-auto">
+            <div className="container mx-auto bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2 h-screen flex flex-col">
                 { innerContent }
             </div>
         </div>
