@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Activity, {ActivityDelta, EmptyActivity} from '../types/Activity';
+import Activity, {ActivityDelta, EmptyActivity, ActivityTotal} from '../types/Activity';
 import {formatDateDifference, getCurrentUnixTime} from '../DateUtils';
 import UserActivityForm from './UserActivityForm';
 
@@ -38,12 +38,13 @@ type UserActivityLogProps = {
     challengeId: number
     users: string[]
     deltas: ActivityDelta[]
+    totals: ActivityTotal[]
     startAt: number
     endAt: number
     sealed: boolean
 }
 
-const UserActivityLog = ({ challengeId, users, deltas, startAt, endAt, sealed }: UserActivityLogProps) => {
+const UserActivityLog = ({ challengeId, users, deltas, totals, startAt, endAt, sealed }: UserActivityLogProps) => {
     const [editedActivity, setEditedActivity] = useState(EmptyActivity);
     const entries = deltas.map(
         (delta: ActivityDelta) => {

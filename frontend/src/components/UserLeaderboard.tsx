@@ -67,23 +67,14 @@ export const UserLeaderboardListingEntry = ({ activityTotal, maximum, sealed, ra
 };
 
 type UserLeaderboardListingProps = {
-    users: string[];
     activityTotals: ActivityTotal[];
     unit: string;
     sealed: boolean;
 }
 
-const UserLeaderboardListing = ({ users, activityTotals, unit, sealed }: UserLeaderboardListingProps) => {
-    // Compute the totals per user.
-    const userTotals = users.map((user, _) => {
-        return {
-            'name': user,
-            'value': activityTotals.filter(at => at.name === user).reduce((acc, curr) => acc + curr.value, 0),
-             unit,
-        };
-    }).sort((a, b) => b.value - a.value);
-    const maxValue = Math.max.apply(null, userTotals.map((at, _) => at.value));
-    const entries = userTotals.map((at, idx) => <UserLeaderboardListingEntry key={at.name} activityTotal={at} maximum={maxValue} sealed={sealed} rank={idx + 1} />);
+const UserLeaderboardListing = ({ activityTotals, unit, sealed }: UserLeaderboardListingProps) => {
+    const maxValue = Math.max.apply(null, activityTotals.map((at, _) => at.value));
+    const entries = activityTotals.map((at, idx) => <UserLeaderboardListingEntry key={at.name} activityTotal={at} maximum={maxValue} sealed={sealed} rank={idx + 1} />);
 
     return (
         <div>
@@ -109,7 +100,7 @@ const UserLeaderboard = ({ challengeName, id, users, activityTotals, startAt, en
   return (
     <div>
         <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} ended={ended} sealAt={sealAt} sealed={sealed} />
-        <UserLeaderboardListing users={users} activityTotals={activityTotals} unit={unit} sealed={sealed} />
+        <UserLeaderboardListing activityTotals={activityTotals} unit={unit} sealed={sealed} />
     </div>
   )
 }

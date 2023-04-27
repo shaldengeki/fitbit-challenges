@@ -4,9 +4,11 @@ import _ from 'lodash'
 import Activity, {ActivityDelta} from '../types/Activity';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
-import {ActivityTotal} from '../types/Activity';
+import {ActivityTotal, EmptyActivity} from '../types/Activity';
 
 export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity[] {
+    // There might be many logs for a single date.
+    // Retrieve just the latest log for a given date.
     return _.chain(activities)
         .groupBy(
             (activity: Activity) : string => {
@@ -15,15 +17,7 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
         )
         .values()
         .map((activities: Activity[]): Activity => {
-            return _.maxBy(activities, 'createdAt') || {
-                'id': 0,
-                'user': 'unknown',
-                'createdAt': 0,
-                'recordDate': '',
-                'steps': 0,
-                'activeMinutes': 0,
-                'distanceKm': 0,
-            }
+            return _.maxBy(activities, 'createdAt') || EmptyActivity;
         })
         .value();
 }
@@ -79,10 +73,8 @@ type WorkweekHustleProps = {
 }
 
 const WorkweekHustle = ({id, users, createdAt, startAt, endAt, ended, sealAt, sealed, activities}: WorkweekHustleProps) => {
-    // There might be many logs for a single date.
-    // Retrieve just the latest log for a given date.
-    // const activities: Activity[] = fetchActivities.data.activities;
-    const activityTotals: ActivityTotal[] = getLatestActivityPerUserPerDay(activities)
+    // Compute the totals per user.
+    const totalData: ActivityTotal[] = getLatestActivityPerUserPerDay(activities)
         .map((activity: Activity) => {
             return {
                 "name": activity.user,
@@ -90,6 +82,14 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt, ended, sealAt, se
                 "unit": "steps",
             }
         });
+
+    const activityTotals = users.map((user, _) => {
+        return {
+            name: user,
+            value: totalData.filter(at => at.name === user).reduce((acc, curr) => acc + curr.value, 0),
+            unit: "steps",
+        };
+    }).sort((a, b) => b.value - a.value);
 
     const activityLogData: ActivityDelta[] = getActivityLogs(activities);
 
@@ -109,7 +109,7 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt, ended, sealAt, se
                     unit={"steps"}
                 />
             </div>
-            <UserActivityLog challengeId={id} users={users} deltas={activityLogData} startAt={startAt} endAt={endAt} sealed={sealed} />
+            <UserActivityLog challengeId={id} users={users} deltas={activityLogData} totals={activityTotals} startAt={startAt} endAt={endAt} sealed={sealed} />
         </div>
     );
 };
