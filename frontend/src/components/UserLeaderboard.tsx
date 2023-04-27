@@ -31,7 +31,7 @@ const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt, seale
     }
     return (
         <div className="border-b-2 border-slate-50 dark:border-neutral-600 mb-8 pb-4">
-            <div className='col-span-3 text-center text-2xl'><Link to={`/challenges/${id}`}>{title}</Link></div>
+            <div className='col-span-3 text-center text-2xl'><a href={`/challenges/${id}`}>{title}</a></div>
             <div className='col-span-3 text-center'>{timingCopy}</div>
         </div>
     );
