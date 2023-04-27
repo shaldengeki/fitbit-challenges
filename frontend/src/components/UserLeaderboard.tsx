@@ -2,6 +2,7 @@ import React from 'react';
 import ProgressBar from './ProgressBar';
 import {ActivityTotal} from '../types/Activity';
 import {getCurrentUnixTime, formatDateDifference} from '../DateUtils';
+import { Link } from "react-router-dom";
 
 export type UserData = {
     name: string;
@@ -14,9 +15,12 @@ type UserLeaderboardHeaderProps = {
     id: number;
     startAt: number;
     endAt: number;
+    ended: boolean;
+    sealAt: number;
+    sealed: boolean;
 }
 
-const UserLeaderboardHeader = ({ title, id, startAt, endAt }: UserLeaderboardHeaderProps) => {
+const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt, sealed }: UserLeaderboardHeaderProps) => {
     let timingCopy = "";
     if (getCurrentUnixTime() > endAt) {
         timingCopy = "Ended " + formatDateDifference(getCurrentUnixTime() - endAt) + " ago";
@@ -27,7 +31,7 @@ const UserLeaderboardHeader = ({ title, id, startAt, endAt }: UserLeaderboardHea
     }
     return (
         <div className="border-b-2 border-slate-50 dark:border-neutral-600 mb-8 pb-4">
-            <div className='col-span-3 text-center text-2xl'>{title}</div>
+            <div className='col-span-3 text-center text-2xl'><Link to={`/challenges/${id}`}>{title}</Link></div>
             <div className='col-span-3 text-center'>{timingCopy}</div>
         </div>
     );
@@ -88,7 +92,7 @@ type UserLeaderboardProps = {
 const UserLeaderboard = ({ challengeName, id, users, activityTotals, startAt, endAt, ended, sealAt, sealed, unit }: UserLeaderboardProps) => {
   return (
     <div>
-        <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} />
+        <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} ended={ended} sealAt={sealAt} sealed={sealed} />
         <UserLeaderboardListing users={users} activityTotals={activityTotals} unit={unit} />
     </div>
   )
