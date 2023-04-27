@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import PageContainer from '../components/PageContainer';
 import WorkweekHustle from '../components/WorkweekHustle';
 import Activity from '../types/Activity';
+import Challenge from '../types/Challenge';
 
 export const FETCH_WORKWEEK_HUSTLE_QUERY = gql`
     query FetchChallenge($id: Int!) {
@@ -50,8 +51,9 @@ const ChallengeView = () => {
     } else if (data.challenges.length > 1) {
         innerContent = <p>Error: multiple challenges with that ID were found!</p>
     } else {
-        const challenge = data.challenges[0];
-        const users = challenge.users.split(",");
+        const challenges: Challenge[] = data.challenges;
+        const challenge = challenges[0];
+        const users = challenge.users;
         const activities: Activity[] = challenge.activities;
         innerContent = <WorkweekHustle
                             id={id}
