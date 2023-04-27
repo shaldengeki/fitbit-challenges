@@ -12,6 +12,9 @@ export const FETCH_WORKWEEK_HUSTLE_QUERY = gql`
               createdAt
               startAt
               endAt
+              ended
+              sealAt
+              sealed
               activities {
                 id
                 user
@@ -55,6 +58,9 @@ const ChallengeView = () => {
                             createdAt={challenge.createdAt}
                             startAt={challenge.startAt}
                             endAt={challenge.endAt}
+                            ended={challenge.ended}
+                            sealAt={challenge.sealAt}
+                            sealed={challenge.sealed}
                             activities={activities}
                         />;
     }

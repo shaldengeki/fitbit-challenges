@@ -4,7 +4,7 @@ import _ from 'lodash'
 import Activity, {ActivityDelta} from '../types/Activity';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
-import ActivityDataPoint from '../types/ActivityDataPoint';
+import {ActivityTotal} from '../types/Activity';
 
 export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity[] {
     return _.chain(activities)
@@ -72,14 +72,17 @@ type WorkweekHustleProps = {
     createdAt: number;
     startAt: number;
     endAt: number;
+    ended: boolean;
+    sealAt: number;
+    sealed: boolean;
     activities: Activity[];
 }
 
-const WorkweekHustle = ({id, users, createdAt, startAt, endAt, activities}: WorkweekHustleProps) => {
+const WorkweekHustle = ({id, users, createdAt, startAt, endAt, ended, sealAt, sealed, activities}: WorkweekHustleProps) => {
     // There might be many logs for a single date.
     // Retrieve just the latest log for a given date.
     // const activities: Activity[] = fetchActivities.data.activities;
-    const leaderboardData: ActivityDataPoint[] = getLatestActivityPerUserPerDay(activities)
+    const activityTotals: ActivityTotal[] = getLatestActivityPerUserPerDay(activities)
         .map((activity: Activity) => {
             return {
                 "name": activity.user,
@@ -97,10 +100,13 @@ const WorkweekHustle = ({id, users, createdAt, startAt, endAt, activities}: Work
                     challengeName={"Workweek Hustle"}
                     id={id}
                     users={users}
-                    activityData={leaderboardData}
+                    activityTotals={activityTotals}
                     createdAt={createdAt}
                     startAt={startAt}
                     endAt={endAt}
+                    ended={ended}
+                    sealAt={sealAt}
+                    sealed={sealed}
                     unit={"steps"}
                 />
             </div>

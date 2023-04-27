@@ -1,6 +1,6 @@
 import React from 'react';
 import ProgressBar from './ProgressBar';
-import ActivityDataPoint from '../types/ActivityDataPoint';
+import {ActivityTotal} from '../types/Activity';
 import {getCurrentUnixTime, formatDateDifference} from '../DateUtils';
 
 export type UserData = {
@@ -34,36 +34,36 @@ const UserLeaderboardHeader = ({ title, id, startAt, endAt }: UserLeaderboardHea
 };
 
 type UserLeaderboardListingEntryProps = {
-    activityDataPoint: ActivityDataPoint;
+    activityTotal: ActivityTotal;
     maximum: number;
 }
 
-export const UserLeaderboardListingEntry = ({ activityDataPoint, maximum }: UserLeaderboardListingEntryProps) => {
+export const UserLeaderboardListingEntry = ({ activityTotal, maximum }: UserLeaderboardListingEntryProps) => {
     return (
         <div className="grid grid-cols-3 gap-0">
-            <div className="col-span-2">{activityDataPoint.name}</div>
-            <ProgressBar value={activityDataPoint.value} maximum={maximum} />
+            <div className="col-span-2">{activityTotal.name}</div>
+            <ProgressBar value={activityTotal.value} maximum={maximum} />
         </div>
     );
 };
 
 type UserLeaderboardListingProps = {
     users: string[];
-    activityData: ActivityDataPoint[];
+    activityTotals: ActivityTotal[];
     unit: string;
 }
 
-const UserLeaderboardListing = ({ users, activityData, unit }: UserLeaderboardListingProps) => {
+const UserLeaderboardListing = ({ users, activityTotals, unit }: UserLeaderboardListingProps) => {
     // Compute the totals per user.
     const userTotals = users.map((user, _) => {
         return {
             'name': user,
-            'value': activityData.filter(adp => adp.name === user).reduce((acc, curr) => acc + curr.value, 0),
+            'value': activityTotals.filter(at => at.name === user).reduce((acc, curr) => acc + curr.value, 0),
              unit,
         };
     }).sort((a, b) => b.value - a.value);
-    const maxValue = Math.max.apply(null, userTotals.map((adp, _) => adp.value));
-    const entries = userTotals.map((adp, _) => <UserLeaderboardListingEntry key={adp.name} activityDataPoint={adp} maximum={maxValue} />);
+    const maxValue = Math.max.apply(null, userTotals.map((at, _) => at.value));
+    const entries = userTotals.map((at, _) => <UserLeaderboardListingEntry key={at.name} activityTotal={at} maximum={maxValue} />);
 
     return (
         <div>
@@ -76,18 +76,21 @@ type UserLeaderboardProps = {
     challengeName: string;
     id: number;
     users: string[];
-    activityData: ActivityDataPoint[];
+    activityTotals: ActivityTotal[];
     createdAt: number;
     startAt: number;
     endAt: number;
+    ended: boolean;
+    sealAt: number;
+    sealed: boolean;
     unit: string;
 }
 
-const UserLeaderboard = ({ challengeName, id, users, activityData, createdAt, startAt, endAt, unit }: UserLeaderboardProps) => {
+const UserLeaderboard = ({ challengeName, id, users, activityTotals, createdAt, startAt, endAt, unit }: UserLeaderboardProps) => {
   return (
     <div>
         <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} />
-        <UserLeaderboardListing users={users} activityData={activityData} unit={unit} />
+        <UserLeaderboardListing users={users} activityTotals={activityTotals} unit={unit} />
     </div>
   )
 }

@@ -13,6 +13,9 @@ it('should render when no activities exist', async () => {
                 createdAt={0}
                 startAt={0}
                 endAt={0}
+                ended={false}
+                sealAt={0}
+                sealed={false}
                 activities={[]}
             />
         </MockedProvider>,
@@ -34,6 +37,9 @@ it('should select just the latest activity per day', async () => {
             createdAt={0}
             startAt={0}
             endAt={0}
+            ended={false}
+            sealAt={0}
+            sealed={false}
             activities={activities}
         />
         </MockedProvider>,
