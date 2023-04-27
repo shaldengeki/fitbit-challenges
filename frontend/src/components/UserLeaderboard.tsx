@@ -22,8 +22,11 @@ type UserLeaderboardHeaderProps = {
 
 const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt, sealed }: UserLeaderboardHeaderProps) => {
     let timingCopy = "";
-    if (getCurrentUnixTime() > endAt) {
+    if (ended) {
         timingCopy = "Ended " + formatDateDifference(getCurrentUnixTime() - endAt) + " ago";
+        if (!sealed) {
+            timingCopy = "⚠️" + timingCopy + `. ${formatDateDifference(sealAt - getCurrentUnixTime())} left to record data!⚠️`
+        }
     } else if (getCurrentUnixTime() > startAt) {
         timingCopy = "Started " + formatDateDifference(getCurrentUnixTime() - startAt) + " ago (ends in " + formatDateDifference(endAt - getCurrentUnixTime()) + ")";
     } else {
