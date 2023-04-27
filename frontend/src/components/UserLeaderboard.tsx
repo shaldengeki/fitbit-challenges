@@ -43,12 +43,24 @@ const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt, seale
 type UserLeaderboardListingEntryProps = {
     activityTotal: ActivityTotal;
     maximum: number;
+    sealed: boolean;
+    rank: number;
 }
 
-export const UserLeaderboardListingEntry = ({ activityTotal, maximum }: UserLeaderboardListingEntryProps) => {
+export const UserLeaderboardListingEntry = ({ activityTotal, maximum, sealed, rank }: UserLeaderboardListingEntryProps) => {
+    let placeEmoji = "";
+    if (sealed) {
+        if (rank === 1) {
+            placeEmoji = "🥇";
+        } else if (rank === 2) {
+            placeEmoji = "🥈";
+        } else if (rank === 3) {
+            placeEmoji = "🥉";
+        }
+    }
     return (
         <div className="grid grid-cols-3 gap-0">
-            <div className="col-span-2">{activityTotal.name}</div>
+            <div className="col-span-2">{placeEmoji}{activityTotal.name}</div>
             <ProgressBar value={activityTotal.value} maximum={maximum} />
         </div>
     );
@@ -58,9 +70,10 @@ type UserLeaderboardListingProps = {
     users: string[];
     activityTotals: ActivityTotal[];
     unit: string;
+    sealed: boolean;
 }
 
-const UserLeaderboardListing = ({ users, activityTotals, unit }: UserLeaderboardListingProps) => {
+const UserLeaderboardListing = ({ users, activityTotals, unit, sealed }: UserLeaderboardListingProps) => {
     // Compute the totals per user.
     const userTotals = users.map((user, _) => {
         return {
@@ -70,7 +83,7 @@ const UserLeaderboardListing = ({ users, activityTotals, unit }: UserLeaderboard
         };
     }).sort((a, b) => b.value - a.value);
     const maxValue = Math.max.apply(null, userTotals.map((at, _) => at.value));
-    const entries = userTotals.map((at, _) => <UserLeaderboardListingEntry key={at.name} activityTotal={at} maximum={maxValue} />);
+    const entries = userTotals.map((at, idx) => <UserLeaderboardListingEntry key={at.name} activityTotal={at} maximum={maxValue} sealed={sealed} rank={idx + 1} />);
 
     return (
         <div>
@@ -96,7 +109,7 @@ const UserLeaderboard = ({ challengeName, id, users, activityTotals, startAt, en
   return (
     <div>
         <UserLeaderboardHeader title={challengeName} id={id} startAt={startAt} endAt={endAt} ended={ended} sealAt={sealAt} sealed={sealed} />
-        <UserLeaderboardListing users={users} activityTotals={activityTotals} unit={unit} />
+        <UserLeaderboardListing users={users} activityTotals={activityTotals} unit={unit} sealed={sealed} />
     </div>
   )
 }
