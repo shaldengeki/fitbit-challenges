@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
+import PageContainer from '../components/PageContainer';
 import PageTitle from "../components/PageTitle";
 
 export const FETCH_CHALLENGES_QUERY = gql`
@@ -32,12 +33,10 @@ const ChallengesListingView = () => {
     }
 
     return (
-        <div className="dark:bg-neutral-600 dark:text-slate-400 h-screen">
-            <div className="container mx-auto bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2 h-screen flex flex-col">
-                <PageTitle>Challenges</PageTitle>
-                { innerContent }
-            </div>
-        </div>
+        <PageContainer>
+            <PageTitle>Challenges</PageTitle>
+            { innerContent }
+        </PageContainer>
     )
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
+import PageContainer from '../components/PageContainer';
 import WorkweekHustle from '../components/WorkweekHustle';
 import Activity from '../types/Activity';
 
@@ -66,11 +67,9 @@ const ChallengeView = () => {
     }
 
     return (
-        <div className="dark:bg-neutral-600 dark:text-slate-400 h-screen">
-            <div className="container mx-auto bg-blue-200 dark:bg-indigo-950 dark:text-slate-400 p-2 h-screen flex flex-col">
-                {innerContent}
-            </div>
-        </div>
+        <PageContainer>
+            {innerContent}
+        </PageContainer>
     )
 }
 
