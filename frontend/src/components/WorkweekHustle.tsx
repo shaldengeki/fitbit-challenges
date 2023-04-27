@@ -1,25 +1,10 @@
 import * as React from 'react';
 import _ from 'lodash'
-import { useQuery, gql } from '@apollo/client';
 
 import Activity, {ActivityDelta} from '../types/Activity';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
 import ActivityDataPoint from '../types/ActivityDataPoint';
-
-export const FETCH_ACTIVITIES_QUERY = gql`
-    query FetchActivities($users: [String]!, $recordedAfter: Int!, $recordedBefore: Int!) {
-        activities(users: $users, recordedBefore: $recordedBefore, recordedAfter: $recordedAfter) {
-            id
-            user
-            createdAt
-            recordDate
-            steps
-            activeMinutes
-            distanceKm
-        }
-    }
-`;
 
 export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity[] {
     return _.chain(activities)
