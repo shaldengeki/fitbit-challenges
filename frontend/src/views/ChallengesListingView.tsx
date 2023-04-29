@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useQuery, gql } from '@apollo/client';
 import PageContainer from '../components/PageContainer';
 import PageTitle from "../components/PageTitle";
@@ -63,6 +63,8 @@ const ChallengesListingView = () => {
     const { loading, error, data } = useQuery(
         FETCH_CHALLENGES_QUERY,
     );
+
+
 
     let challenges: Challenge[] = [];
     if (data && data.challenges) {

@@ -3,7 +3,7 @@ import Confetti from './Confetti';
 import { useMutation, gql } from '@apollo/client';
 import {FETCH_WORKWEEK_HUSTLE_QUERY} from '../views/ChallengeView';
 import {getCurrentUnixTime} from '../DateUtils';
-import Activity, {EmptyActivity} from '../types/Activity';
+import Activity, {emptyActivity} from '../types/Activity';
 
 const CREATE_USER_ACTIVITY_MUTATION = gql`
     mutation CreateUserActivity(
@@ -274,7 +274,7 @@ const UserActivityForm = ({ challengeId, users, startAt, endAt, editedActivity, 
             </button>
             <button
                 className="p-0.5 rounded bg-slate-200 dark:bg-pink-900 dark:text-slate-400"
-                onClick={(e) => {e.preventDefault(); editActivityHook(EmptyActivity)}}
+                onClick={(e) => {e.preventDefault(); editActivityHook(emptyActivity)}}
             >
                 Cancel
             </button>
