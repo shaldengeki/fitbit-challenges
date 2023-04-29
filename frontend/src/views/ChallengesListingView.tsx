@@ -80,12 +80,10 @@ type CreateChallengeLinkProps = {
 
 const CreateChallengeLink = ({ hook }: CreateChallengeLinkProps) => {
     return (
-        <div>
-            <button
-                onClick={(e) => {e.preventDefault(); hook(true);}}
-            >
+        <div className="py-2">
+            <SubmitButton hook={(e: any) => {e.preventDefault(); hook(true);}}>
                 Create challenge
-            </button>
+            </SubmitButton>
         </div>
     )
 }
