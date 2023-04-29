@@ -33,8 +33,8 @@ type UserActivityLogEntryProps = {
 
 const UserActivityLogEntry = ( {delta, editHook, sealed}: UserActivityLogEntryProps) => {
     return (
-        <div className="grid grid-cols-3 gap-0">
-            <div className="col-span-2">
+        <div className="grid grid-cols-2 gap-0">
+            <div className="col-span-1">
                 {delta.user} took {delta.stepsDelta.toLocaleString()} steps on {formatActivityDate(delta.recordDate)}
             </div>
             <div className="col-span-1 text-right italic text-sm">

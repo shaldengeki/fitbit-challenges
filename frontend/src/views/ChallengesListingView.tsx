@@ -64,23 +64,18 @@ const ChallengesListingView = () => {
         FETCH_CHALLENGES_QUERY,
     );
 
-    let innerContent = <p></p>;
-    if (loading) innerContent = <p>Loading...</p>;
-    else if (error) innerContent = <p>Error: {error.message}</p>;
-    else if (data.challenges.length < 1) {
-        innerContent = <p>No challenges found!</p>;
-    } else {
-        const challenges: Challenge[] = data.challenges;
-        const sortedChallenges = challenges.sort((a, b) => b.endAt - a.endAt);
-        innerContent = (
-            <ChallengesListingTable challenges={sortedChallenges} />
-        )
+    let challenges: Challenge[] = [];
+    if (data && data.challenges) {
+        challenges = data.challenges.sort((a: Challenge, b: Challenge) => b.endAt - a.endAt);
     }
 
     return (
         <PageContainer>
             <PageTitle><Link to={'/challenges'}>Challenges</Link></PageTitle>
-            { innerContent }
+            { loading && <p>Loading...</p> }
+            { error && <p>Error: {error.message}</p> }
+            { data && data.challenges && data.challenges.length < 1 && <p>No challenges found!</p> }
+            { data && data.challenges && <ChallengesListingTable challenges={challenges} /> }
         </PageContainer>
     )
 }
