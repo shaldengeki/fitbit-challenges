@@ -117,7 +117,7 @@ const CreateChallengeForm = ({ challenge, editHook, formHook }: CreateChallengeF
     }
     const cancelHook = (e: any) => {
         e.preventDefault();
-        editHook(emptyChallenge);
+        editHook({ ...emptyChallenge, startAt: nextMonday() });
         formHook(false);
     }
 
