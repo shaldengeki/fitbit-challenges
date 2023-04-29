@@ -127,15 +127,18 @@ const CreateChallengeForm = ({ challenge, editHook, formHook }: CreateChallengeF
 
     return (
         <div>
+            { error && <p>Error creating challenge!</p> }
+            { loading && <p>Creating challenge...</p> }
+            { !data &&
             <form>
                 <input
                     name="users"
+                    className="text-slate-800"
                     value={joinedUsers}
                     onChange={(e) => {
-                        formHook(false);
                         editHook({
                             ...challenge,
-                            users: e.target.value.split(","),
+                            users: e.target.value.trim().split(",").map((s) => s.trim()),
                         })
                     }}
                     placeholder="Comma-separated users"
@@ -146,7 +149,7 @@ const CreateChallengeForm = ({ challenge, editHook, formHook }: CreateChallengeF
                 <CancelButton hook={cancelHook}>
                     Cancel
                 </CancelButton>
-            </form>
+            </form> }
         </div>
     )
 }
