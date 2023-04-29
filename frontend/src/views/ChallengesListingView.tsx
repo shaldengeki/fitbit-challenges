@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useMutation, useQuery, gql } from '@apollo/client';
 import PageContainer from '../components/PageContainer';
 import PageTitle from "../components/PageTitle";
-import Challenge from "../types/Challenge";
-import {formatDateDifference, getCurrentUnixTime} from '../DateUtils';
+import Challenge, {emptyChallenge} from "../types/Challenge";
+import {formatDateDifference, getCurrentUnixTime, nextMonday} from '../DateUtils';
 import { Link } from 'react-router-dom';
+import {CancelButton, SubmitButton} from '../components/FormButton';
 
 
 export const FETCH_CHALLENGES_QUERY = gql`
@@ -21,6 +22,20 @@ export const FETCH_CHALLENGES_QUERY = gql`
           }
       }
 `;
+
+const CREATE_CHALLENGE_MUTATION = gql`
+    mutation CreateChallenge(
+        $users:[String]!,
+        $startAt:Int!,
+    ) {
+        createWorkweekHustle(
+            users:$users,
+            startAt:$startAt,
+        ) {
+            id
+        }
+    }
+`
 
 type ChallengesListingTableEntryProps = {
     challenge: Challenge
@@ -59,16 +74,95 @@ const ChallengesListingTable = ({ challenges }: ChallengesListingTableProps) => 
     )
 }
 
+type CreateChallengeLinkProps = {
+    hook: Function
+}
+
+const CreateChallengeLink = ({ hook }: CreateChallengeLinkProps) => {
+    return (
+        <div>
+            <button
+                onClick={(e) => {e.preventDefault(); hook(true);}}
+            >
+                Create challenge
+            </button>
+        </div>
+    )
+}
+
+type CreateChallengeFormProps = {
+    challenge: Challenge
+    editHook: Function
+    formHook: Function
+}
+
+const CreateChallengeForm = ({ challenge, editHook, formHook }: CreateChallengeFormProps) => {
+    const [createChallenge, { data, loading, error, reset }] = useMutation(
+        CREATE_CHALLENGE_MUTATION,
+        {
+            refetchQueries: [
+                {
+                    query: FETCH_CHALLENGES_QUERY,
+                },
+                'FetchChallenges'
+            ]
+        }
+    )
+
+    const joinedUsers = challenge.users.join(",")
+    const challengeHook = (e: any) => {
+        e.preventDefault();
+        createChallenge({
+            variables: {
+                users: challenge.users,
+                startAt: challenge.startAt,
+            }
+        })
+    }
+    const cancelHook = (e: any) => {
+        e.preventDefault();
+        editHook(emptyChallenge);
+        formHook(false);
+    }
+
+    return (
+        <div>
+            <form>
+                <input
+                    name="users"
+                    value={joinedUsers}
+                    onChange={(e) => {
+                        formHook(false);
+                        editHook({
+                            ...challenge,
+                            users: e.target.value.split(","),
+                        })
+                    }}
+                    placeholder="Comma-separated users"
+                />
+                <SubmitButton hook={challengeHook}>
+                    Submit
+                </SubmitButton>
+                <CancelButton hook={cancelHook}>
+                    Cancel
+                </CancelButton>
+            </form>
+        </div>
+    )
+}
+
 const ChallengesListingView = () => {
     const { loading, error, data } = useQuery(
         FETCH_CHALLENGES_QUERY,
     );
 
-
+    const [editFormShowing, setEditFormShowing] = useState(false);
+    const [editedChallenge, setEditedChallenge] = useState({ ...emptyChallenge, startAt: nextMonday() });
 
     let challenges: Challenge[] = [];
     if (data && data.challenges) {
-        challenges = data.challenges.sort((a: Challenge, b: Challenge) => b.endAt - a.endAt);
+        challenges = data.challenges.slice(0);
+        challenges = challenges.sort((a: Challenge, b: Challenge) => b.endAt - a.endAt);
     }
 
     return (
@@ -76,6 +170,8 @@ const ChallengesListingView = () => {
             <PageTitle><Link to={'/challenges'}>Challenges</Link></PageTitle>
             { loading && <p>Loading...</p> }
             { error && <p>Error: {error.message}</p> }
+            { !editFormShowing && <CreateChallengeLink hook={setEditFormShowing} /> }
+            { editFormShowing && <CreateChallengeForm challenge={editedChallenge} editHook={setEditedChallenge} formHook={setEditFormShowing} /> }
             { data && data.challenges && data.challenges.length < 1 && <p>No challenges found!</p> }
             { data && data.challenges && <ChallengesListingTable challenges={challenges} /> }
         </PageContainer>
