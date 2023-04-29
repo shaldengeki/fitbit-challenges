@@ -80,11 +80,9 @@ type CreateChallengeLinkProps = {
 
 const CreateChallengeLink = ({ hook }: CreateChallengeLinkProps) => {
     return (
-        <div className="py-2">
-            <SubmitButton hook={(e: any) => {e.preventDefault(); hook(true);}}>
-                Create challenge
-            </SubmitButton>
-        </div>
+        <SubmitButton hook={(e: any) => {e.preventDefault(); hook(true);}}>
+            Create challenge
+        </SubmitButton>
     )
 }
 
@@ -171,8 +169,10 @@ const ChallengesListingView = () => {
             <PageTitle><Link to={'/challenges'}>Challenges</Link></PageTitle>
             { loading && <p>Loading...</p> }
             { error && <p>Error: {error.message}</p> }
-            { !editFormShowing && <CreateChallengeLink hook={setEditFormShowing} /> }
-            { editFormShowing && <CreateChallengeForm challenge={editedChallenge} editHook={setEditedChallenge} formHook={setEditFormShowing} /> }
+            <div className="py-2">
+                { !editFormShowing && <CreateChallengeLink hook={setEditFormShowing} /> }
+                { editFormShowing && <CreateChallengeForm challenge={editedChallenge} editHook={setEditedChallenge} formHook={setEditFormShowing} /> }
+            </div>
             { data && data.challenges && data.challenges.length < 1 && <p>No challenges found!</p> }
             { data && data.challenges && <ChallengesListingTable challenges={challenges} /> }
         </PageContainer>
