@@ -6,7 +6,7 @@ type FormButtonProps = {
 }
 
 const FormButton = (props: PropsWithChildren<FormButtonProps>) => {
-    const baseClasses = "p-0.5 mx-0.5 rounded dark:text-slate-200"
+    const baseClasses = "py-0.5 px-1 mx-0.5 rounded dark:text-slate-200"
     let actualClasses = baseClasses
     if (props.className) {
         actualClasses += " " + props.className;
