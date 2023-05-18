@@ -16,7 +16,7 @@ COPY . .
 
 RUN npm run tailwind:css
 
-RUN npm run build
+RUN npm run build:prod
 
 FROM nginx:1.24-alpine
 
