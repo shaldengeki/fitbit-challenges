@@ -17,12 +17,6 @@ def Schema(models):
         query=GraphQLObjectType(
             name="Query",
             fields={
-                "test": GraphQLField(
-                    GraphQLString,
-                    args={},
-                    resolve=get_test_field,
-                    description="Test field",
-                ),
                 "challenges": challenges_field(models.WorkweekHustle),
                 "activities": activities_field(models.UserActivity),
             },
