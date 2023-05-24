@@ -120,9 +120,8 @@ const CreateChallengeForm = ({ challenge, editHook, formHook }: CreateChallengeF
             startAt = nextSaturday();
         } else if (challenge.challengeType === ChallengeType.WorkweekHustle) {
             startAt = nextMonday();
-        } else {
-            // TODO: throw an error.
         }
+        // We don't guard against wrong challenge types, because the API should handle this for us.
         createChallenge({
             variables: {
                 users: challenge.users,
