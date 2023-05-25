@@ -1,6 +1,8 @@
+import datetime
+from datetime import timezone
 from flask import abort, request
 from graphql_server.flask import GraphQLView
-from .config import app, verify_fitbit_signature, verify_fitbit_verification
+from .config import app, db, verify_fitbit_signature, verify_fitbit_verification
 from . import models
 
 from . import gql
@@ -29,4 +31,14 @@ def fitbit_notifications():
     ):
         abort(400)
 
-    return "yay!"
+    for notification_data in request.json:
+        subscription_notification = models.SubscriptionNotification(
+            collection_type=notification_data["collectionType"],
+            date=datetime.datetime.strptime(
+                notification_data["date"], "%Y-%m-%d"
+            ).astimezone(timezone.utc),
+            fitbit_user_id=notification_data["ownerId"],
+        )
+        db.session.add(subscription_notification)
+    db.session.commit()
+    return "success", 200
