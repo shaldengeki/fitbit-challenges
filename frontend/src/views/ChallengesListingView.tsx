@@ -6,6 +6,7 @@ import Challenge, {ChallengeType, emptyChallenge} from "../types/Challenge";
 import {formatDateDifference, getCurrentUnixTime, nextMonday, nextSaturday} from '../DateUtils';
 import { Link } from 'react-router-dom';
 import {CancelButton, SubmitButton} from '../components/FormButton';
+import NavBar from '../components/NavBar';
 
 
 export const FETCH_CHALLENGES_QUERY = gql`
@@ -198,6 +199,7 @@ const ChallengesListingView = () => {
 
     return (
         <PageContainer>
+            <NavBar />
             <PageTitle><Link to={'/challenges'}>Challenges</Link></PageTitle>
             <div className="py-2">
                     { !editFormShowing && <CreateChallengeLink hook={setEditFormShowing} /> }
