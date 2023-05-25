@@ -34,13 +34,6 @@ def upgrade():
         ["processed_at"],
     )
 
-    op.create_index(
-        "subscription_notifications_collection_type_date_fitbit_user_id",
-        "subscription_notifications",
-        ["collection_type", "date", "fitbit_user_id"],
-        unique=True,
-    )
-
 
 def downgrade():
     op.drop_table("subscription_notifications")
