@@ -6,7 +6,6 @@ import WorkweekHustle from '../components/WorkweekHustle';
 import WeekendWarrior from '../components/WeekendWarrior';
 import Activity from '../types/Activity';
 import Challenge, {ChallengeType} from '../types/Challenge';
-import NavBar from '../components/NavBar';
 
 export const FETCH_WORKWEEK_HUSTLE_QUERY = gql`
     query FetchChallenge($id: Int!) {
@@ -85,7 +84,6 @@ const ChallengeView = () => {
 
     return (
         <PageContainer>
-            <NavBar />
             {innerContent}
         </PageContainer>
     )
