@@ -17,7 +17,8 @@ ENV DB_HOST=pg
 ENV DB_USERNAME=admin
 ENV DB_PASSWORD=development
 ENV DATABASE_NAME=api_development
-env FITBIT_CLIENT_SECRET=testing
+ENV FITBIT_CLIENT_SECRET=testing
+ENV FITBIT_VERIFICATION_CODE=testing
 
 COPY requirements.txt ./
 

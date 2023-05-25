@@ -21,12 +21,16 @@ app.config[
 app.config["FITBIT_SIGNING_KEY"] = os.getenv("FITBIT_CLIENT_SECRET", "testing") + "&"
 
 
-def verify_fitbit_signature(header_signature: str, json_body: bytes):
+def verify_fitbit_signature(header_signature: str, json_body: bytes) -> bool:
     digest = hmac.digest(
         app.config["FITBIT_SIGNING_KEY"].encode("utf-8"), json_body, hashlib.sha1
     )
     b64_encoded = base64.b64encode(digest)
     return header_signature.encode("utf-8") == b64_encoded
+
+
+def verify_fitbit_verification(request_code: str) -> bool:
+    return request_code == os.getenv("FITBIT_VERIFICATION_CODE", "testing")
 
 
 cors_origin_parts = [

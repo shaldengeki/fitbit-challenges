@@ -15,6 +15,7 @@ services:
       - FRONTEND_HOST
       - FRONTEND_PORT
       - FITBIT_CLIENT_SECRET
+      - FITBIT_VERIFICATION_CODE
     restart: always
   migration:
     build:

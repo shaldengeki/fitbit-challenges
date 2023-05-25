@@ -15,6 +15,7 @@ services:
       - FRONTEND_HOST=localhost
       - FRONTEND_PORT=5001
       - FITBIT_CLIENT_SECRET=testing
+      - FITBIT_VERIFICATION_CODE=testing
   migration:
     volumes:
       - ./api:/usr/src/app
