@@ -68,10 +68,6 @@ def fitbit_authorize():
         )
     )
 
-    # client_id: The Fitbit API application ID from https://dev.fitbit.com/apps.
-    # code: The authorization code
-    # code_verifier: The code verifier value from step 1.
-    # grant_type: authorization_code
     url_parameters = urlencode(
         {
             "client_id": app.config["FITBIT_CLIENT_ID"],
@@ -89,6 +85,7 @@ def fitbit_authorize():
 
     response = auth_request.json()
 
+    # Create or update a user object with the new tokens.
     insert_user = (
         insert(models.User.__tablename__)
         .values(
