@@ -40,6 +40,8 @@ def authorize_with_fitbit(fitbit_client_id: str):
         b64encode(sha256(code_verifier.encode("utf-8")).digest())
         .decode("utf-8")
         .rstrip("=")
+        .replace("+", "-")
+        .replace("/", "_")
     )
     collections = ["activity", "heartrate", "profile", "social"]
 
