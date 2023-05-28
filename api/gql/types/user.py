@@ -27,10 +27,12 @@ def user_fields() -> dict[str, GraphQLField]:
         "fitbitUserId": GraphQLField(
             GraphQLNonNull(GraphQLString),
             description="The fitbit user ID of the user.",
+            resolve=lambda user, info, **args: user.fitbit_user_id,
         ),
         "displayName": GraphQLField(
             GraphQLString,
             description="The user's display name.",
+            resolve=lambda user, info, **args: user.display_name,
         ),
         "createdAt": GraphQLField(
             GraphQLNonNull(GraphQLInt),
