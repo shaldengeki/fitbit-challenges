@@ -98,7 +98,7 @@ def fitbit_authorize():
             "Authorization": f"Bearer {response['access_token']}",
         },
     )
-    display_name = profile_request.json()["user"]["fullName"]
+    display_name = profile_request.json()["user"]["displayName"]
 
     # Create or update a user object with the new tokens.
     insert_user = (
