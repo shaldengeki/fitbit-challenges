@@ -93,10 +93,11 @@ def fetch_display_name(user_id: str, access_token: str) -> str:
     return profile_request.json()["user"]["displayName"]
 
 
-def create_subscription(user_id: str, access_token: str) -> bool:
-    # TODO: set 1 to a user-unique int.
+def create_subscription(
+    user_id: str, access_token: str, fitbit_subscription_id: int
+) -> bool:
     sub_request = requests.post(
-        f"https://api.fitbit.com/1/user/{user_id}/activities/apiSubscriptions/1.json",
+        f"https://api.fitbit.com/1/user/{user_id}/activities/apiSubscriptions/{fitbit_subscription_id}.json",
         headers={
             "Authorization": f"Bearer {access_token}",
             "Accept": "application/json",
@@ -147,7 +148,13 @@ def fitbit_authorize():
     db.session.execute(insert_user)
     db.session.commit()
 
-    create_subscription(token_data["user_id"], token_data["access_token"])
+    user = models.User.query.filter(
+        models.User.fitbit_user_id == token_data["user_id"]
+    ).first()
+
+    create_subscription(
+        token_data["user_id"], token_data["access_token"], user.fitbit_subscription_id
+    )
 
     session["fitbit_user_id"] = token_data["user_id"]
     return redirect(app.config["FRONTEND_URL"])
