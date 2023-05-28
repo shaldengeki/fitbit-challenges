@@ -40,7 +40,7 @@ const NavBar = (props: NavBarProps) => {
                     </Link>
                 }
                 {
-                    data && data.currentUser && <p>{data.currentUser.fitbitUserId}</p>
+                    data && data.currentUser && <p className="ml-auto">{data.currentUser.fitbitUserId}</p>
                 }
             </div>
         </div>
