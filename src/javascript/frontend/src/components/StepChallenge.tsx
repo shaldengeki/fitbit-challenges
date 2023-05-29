@@ -2,6 +2,7 @@ import * as React from 'react';
 import _ from 'lodash'
 
 import Activity, {ActivityDelta} from '../types/Activity';
+import User from '../types/User';
 import UserLeaderboard from './UserLeaderboard';
 import UserActivityLog from './UserActivityLog';
 import {ActivityTotal, emptyActivity} from '../types/Activity';
@@ -63,7 +64,7 @@ export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
 type StepChallengeProps = {
     challengeName: string;
     id: number;
-    users: string[];
+    users: User[];
     startAt: number;
     endAt: number;
     ended: boolean;
@@ -85,8 +86,8 @@ const StepChallenge = ({challengeName, id, users, startAt, endAt, ended, sealAt,
 
     const activityTotals = users.map((user, _) => {
         return {
-            name: user,
-            value: totalData.filter(at => at.name === user).reduce((acc, curr) => acc + curr.value, 0),
+            name: user.displayName,
+            value: totalData.filter(at => at.name === user.displayName).reduce((acc, curr) => acc + curr.value, 0),
             unit: "steps",
         };
     }).sort((a, b) => b.value - a.value);
