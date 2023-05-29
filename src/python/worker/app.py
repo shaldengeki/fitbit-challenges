@@ -81,14 +81,11 @@ def refresh_tokens_for_user(user: User, client_id: str, client_secret: str) -> U
 
 def fetch_user_activity_for_notification(
     notification: SubscriptionNotification,
+    user: User,
     client_id: str,
     client_secret: str,
 ) -> dict:
     formatted_date: str = notification.date.strftime("%Y-%m-%d")
-    user = fetch_user_for_notification(notification)
-    if user is None:
-        return []
-
     print(f"Fetching {notification.fitbit_user_id}'s activity for {formatted_date}.")
     data = requests.get(
         f"https://api.fitbit.com/1/user/{notification.fitbit_user_id}/activities/date/{formatted_date}.json",
@@ -117,8 +114,17 @@ def process_subscription_notifications(client_id: str, client_secret: str) -> No
 
     try:
         # Fetch the user's activity for this date.
+        user = fetch_user_for_notification(notification)
+        if user is None:
+            print(
+                f"No user found for notification {notification}, marking as done and skipping."
+            )
+            notification.processed_at = datetime.datetime.now().astimezone(timezone.utc)
+            db.session.add(notification)
+            db.session.commit()
+            return None
         activity = fetch_user_activity_for_notification(
-            notification, client_id, client_secret
+            notification, user, client_id, client_secret
         )
         active_minutes: int = (
             activity["summary"]["veryActiveMinutes"]
@@ -140,9 +146,11 @@ def process_subscription_notifications(client_id: str, client_secret: str) -> No
             active_minutes=active_minutes,
             distance_km=distance_km,
         )
+        user.synced_at = datetime.datetime.now().astimezone(timezone.utc)
 
         print(f"Recording new activity.")
         db.session.add(new_activity)
+        db.session.add(user)
         db.session.commit()
     except:
         notification.processed_at = None
