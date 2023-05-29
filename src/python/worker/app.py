@@ -180,7 +180,7 @@ def main() -> int:
         while True:
             start = time.time()
             process_subscription_notifications(client_id, client_secret)
-            delay = (time.time() + max_delay) - start
+            delay = (start + max_delay) - time.time()
             if delay > 0:
                 print(f"Sleeping for {round(delay)} seconds")
                 time.sleep(delay)
