@@ -10,7 +10,7 @@ from typing import Optional
 from urllib.parse import urlencode
 
 from ..config import app, db, verify_fitbit_signature, verify_fitbit_verification
-from . import models
+from .. import models
 from . import gql
 
 app.add_url_rule(
