@@ -23,7 +23,7 @@ export function getLatestActivityPerUserPerDay(activities: Activity[]): Activity
         .value();
 }
 
-export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
+export function getActivityLogs(activities: Activity[], users: User[]): ActivityDelta[] {
     // Given a list of activity logs,
     // compute the deltas and return them as a list of new activities.
     return _.sortBy(
@@ -35,13 +35,15 @@ export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
             }).sort((a: Activity, b: Activity): number => {
                 return a.createdAt > b.createdAt ? -1 : 0;
             });
+            const selectedUser = users.filter((user) => { return user.fitbitUserId === activity.user })[0];
             if (priorActivities.length < 1) {
                 // This is the first activity for the day.
                 return {
                     ...activity,
                     stepsDelta: activity.steps,
                     activeMinutesDelta: activity.activeMinutes,
-                    distanceKmDelta: activity.distanceKm
+                    distanceKmDelta: activity.distanceKm,
+                    user: selectedUser.displayName,
                 };
             } else {
                 // There's a prior activity for the day.
@@ -50,7 +52,8 @@ export function getActivityLogs(activities: Activity[]): ActivityDelta[] {
                     ...activity,
                     stepsDelta: (activity.steps - priorActivity.steps),
                     activeMinutesDelta: (activity.activeMinutes - priorActivity.activeMinutes),
-                    distanceKmDelta: (activity.distanceKm - priorActivity.distanceKm)
+                    distanceKmDelta: (activity.distanceKm - priorActivity.distanceKm),
+                    user: selectedUser.displayName,
                 }
             }
         }).filter((delta: ActivityDelta): boolean => {
