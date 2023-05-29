@@ -1,6 +1,6 @@
 version: '3'
 services:
-  api:
+  api: &api
     build:
       context: ./src/python
       dockerfile: api/Dockerfile
@@ -19,11 +19,10 @@ services:
       - FITBIT_VERIFICATION_CODE
       - FLASK_SECRET_KEY
     restart: always
+    depends_on:
+      - pg
   migration:
-    build:
-      context: ./src/python
-      dockerfile: api/Dockerfile
-    image: api
+    <<: *api
     command: ["./scripts/wait-for-postgres.sh", "--", "flask", "--app", "api", "db", "upgrade", "--directory", "./api/migrations"]
     environment:
       - FLASK_DEBUG
@@ -31,8 +30,10 @@ services:
       - DB_USERNAME
       - DB_PASSWORD
       - DATABASE_NAME
-    depends_on:
-      - pg
+    restart: no
+  worker:
+    <<: *api
+    command: ["./scripts/wait-for-postgres.sh", "--", "python", "-m", "worker.app"]
   pg:
     image: postgres:alpine
     restart: always
