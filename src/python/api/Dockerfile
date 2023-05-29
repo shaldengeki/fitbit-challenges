@@ -12,7 +12,7 @@ COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./api .
+COPY . .
 
 ENV FLASK_APP=app.py
 ENV FLASK_DEBUG=True
@@ -29,4 +29,4 @@ ENV FITBIT_CLIENT_SECRET=testing
 ENV FITBIT_VERIFICATION_CODE=testing
 ENV FLASK_SECRET_KEY=testing
 
-CMD ./scripts/wait-for-postgres.sh -- flask run --host 0.0.0.0 --port $PORT
+CMD ./api/scripts/wait-for-postgres.sh -- flask --app api run --host 0.0.0.0 --port $PORT
