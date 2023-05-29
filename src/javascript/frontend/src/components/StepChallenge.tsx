@@ -96,7 +96,7 @@ const StepChallenge = ({challengeName, id, users, startAt, endAt, ended, sealAt,
         };
     }).sort((a, b) => b.value - a.value);
 
-    const activityLogData: ActivityDelta[] = getActivityLogs(activities);
+    const activityLogData: ActivityDelta[] = getActivityLogs(activities, users);
 
     return (
         <>

@@ -51,5 +51,5 @@ it('should select just the latest activity per day', async () => {
         </MockedProvider>,
     );
     // user only has 2 steps.
-    expect(await screen.findByText("a took 1 more step on Tuesday")).toBeInTheDocument();
+    expect(await screen.findByText("A took 1 more step on Tuesday")).toBeInTheDocument();
 });
