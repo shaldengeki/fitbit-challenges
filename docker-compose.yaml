@@ -2,8 +2,8 @@ version: '3'
 services:
   api:
     build:
-      context: ./src/python/api
-      dockerfile: Dockerfile
+      context: ./src/python
+      dockerfile: api/Dockerfile
     image: api
     environment:
       - PORT
@@ -21,8 +21,8 @@ services:
     restart: always
   migration:
     build:
-      context: ./src/python/api
-      dockerfile: Dockerfile
+      context: ./src/python
+      dockerfile: api/Dockerfile
     image: api
     command: ["./scripts/wait-for-postgres.sh", "flask", "db", "upgrade"]
     environment:
