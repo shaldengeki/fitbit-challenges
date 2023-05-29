@@ -33,7 +33,8 @@ services:
     restart: no
   worker:
     <<: *api
-    command: ["./scripts/wait-for-postgres.sh", "--", "python", "-m", "worker.app"]
+    working_dir: /usr/src
+    command: ["./app/scripts/wait-for-postgres.sh", "--", "python", "-u", "-m", "app.worker.app"]
   pg:
     image: postgres:alpine
     restart: always

@@ -4,7 +4,7 @@ from sqlalchemy.sql.functions import now
 import time
 from typing import Optional
 
-from ..config import db
+from ..config import app, db
 from ..models import SubscriptionNotification, User, UserActivity
 
 
@@ -97,13 +97,14 @@ max_delay = 10
 
 
 def main() -> int:
-    while True:
-        start = time.time()
-        process_subscription_notifications()
-        delay = (time.time() + max_delay) - start
-        if delay > 0:
-            print(f"Sleeping for {round(delay)} seconds")
-            time.sleep(delay)
+    with app.app_context():
+        while True:
+            start = time.time()
+            process_subscription_notifications()
+            delay = (time.time() + max_delay) - start
+            if delay > 0:
+                print(f"Sleeping for {round(delay)} seconds")
+                time.sleep(delay)
 
 
 if __name__ == "__main__":
