@@ -24,7 +24,7 @@ services:
       context: ./src/python
       dockerfile: api/Dockerfile
     image: api
-    command: ["./api/scripts/wait-for-postgres.sh", "--", "flask", "--app", "api", "db", "upgrade", "--directory", "./api/migrations"]
+    command: ["./scripts/wait-for-postgres.sh", "--", "flask", "--app", "api", "db", "upgrade", "--directory", "./api/migrations"]
     environment:
       - FLASK_DEBUG
       - DB_HOST
