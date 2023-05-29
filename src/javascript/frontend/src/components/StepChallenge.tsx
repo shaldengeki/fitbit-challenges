@@ -77,8 +77,9 @@ const StepChallenge = ({challengeName, id, users, startAt, endAt, ended, sealAt,
     // Compute the totals per user.
     const totalData: ActivityTotal[] = getLatestActivityPerUserPerDay(activities)
         .map((activity: Activity) => {
+            const selectedUser = users.filter((user) => { return user.fitbitUserId === activity.user; })[0];
             return {
-                "name": activity.user,
+                "name": selectedUser.displayName,
                 "value": activity.steps,
                 "unit": "steps",
             }
