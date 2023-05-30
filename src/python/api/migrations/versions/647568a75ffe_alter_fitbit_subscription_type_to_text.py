@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.alter_column(
-        "user",
+        "users",
         "fitbit_subscription_id",
         type_=sa.Unicode(50),
         existing_type=sa.Integer,
@@ -28,7 +28,7 @@ def upgrade():
 
 def downgrade():
     op.alter_column(
-        "user",
+        "users",
         "fitbit_subscription_id",
         type_=sa.Integer,
         existing_type=sa.Unicode(50),
