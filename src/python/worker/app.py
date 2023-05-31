@@ -26,11 +26,10 @@ def maybe_fetch_subscription_notification() -> Optional[SubscriptionNotification
     if not notification:
         return None
 
-    print(f"Subscription notification to process: {notification.id}")
     notification.processed_at = datetime.datetime.now().astimezone(timezone.utc)
     db.session.add(notification)
     db.session.commit()
-    print(f"Notification locked.")
+    print(f"Subscription notification locked for processing: {notification.id}")
 
     return notification
 
