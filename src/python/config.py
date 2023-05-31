@@ -21,6 +21,7 @@ frontend_url = "".join(frontend_url_parts)
 
 app.config.update(
     FITBIT_CLIENT=FitbitClient(
+        logger=app.logger,
         client_id=os.getenv("FITBIT_CLIENT_ID", "testing"),
         client_secret=os.getenv("FITBIT_CLIENT_SECRET", "testing"),
     ),

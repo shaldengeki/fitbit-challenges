@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import hmac
+import logging
 import requests
 import secrets
 
@@ -12,6 +13,7 @@ from urllib.parse import urlencode
 
 @dataclasses.dataclass
 class FitbitClient:
+    logger: logging.Logger
     client_id: str
     client_secret: str
     collections: list[str] = dataclasses.field(
@@ -58,6 +60,9 @@ class FitbitClient:
         )
 
         if auth_request.status_code != 200:
+            self.logger.warn(
+                f"Could not fetch token data. url={auth_request.url}, headers={auth_request.headers}, body={auth_request.text}"
+            )
             return None
 
         return auth_request.json()
