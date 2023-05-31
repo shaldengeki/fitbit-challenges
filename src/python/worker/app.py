@@ -41,12 +41,12 @@ def fetch_user_for_notification(
 
 
 def refresh_tokens_for_user(user: User, client: FitbitClient) -> User:
-    print(f"Refreshing expired token for {user}.")
     data = client.refresh_user_tokens(user.fitbit_refresh_token)
     user.fitbit_access_token = data["access_token"]
     user.fitbit_refresh_token = data["refresh_token"]
     db.session.add(user)
     db.session.commit()
+    print(f"Refreshed expired token for {user}.")
 
     return user
 
@@ -56,7 +56,6 @@ def fetch_user_activity_for_notification(
     user: User,
     client: FitbitClient,
 ) -> dict:
-    print(f"Fetching {notification.fitbit_user_id}'s activity for {notification.date}.")
     data = client.get_user_daily_activity_summary(
         user.fitbit_access_token, notification.date
     )
@@ -83,6 +82,7 @@ def process_subscription_notifications(client: FitbitClient) -> None:
             db.session.add(notification)
             db.session.commit()
             return None
+
         activity = fetch_user_activity_for_notification(notification, user, client)
         active_minutes: int = (
             activity["summary"]["veryActiveMinutes"]
@@ -119,10 +119,10 @@ def process_subscription_notifications(client: FitbitClient) -> None:
         ):
             user.synced_at = datetime.datetime.now().astimezone(timezone.utc)
 
-            print(f"Recording new activity.")
             db.session.add(new_activity)
             db.session.add(user)
             db.session.commit()
+            print(f"Recorded new activity for {user.fitbit_user_id}.")
     except:
         notification.processed_at = None
         db.session.add(notification)
