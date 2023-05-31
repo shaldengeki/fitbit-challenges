@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import insert
 from typing import Optional
 from urllib.parse import urlencode
 
-from ..config import app, db, verify_fitbit_signature, verify_fitbit_verification
+from ..config import app, db, verify_fitbit_verification
 from .. import models
 from . import gql
 
@@ -34,7 +34,7 @@ def fitbit_verification():
 
 @app.route("/fitbit-notifications", methods=["POST"])
 def fitbit_notifications():
-    if not verify_fitbit_signature(
+    if not app.config["FITBIT_CLIENT"].verify_signature(
         request.headers.get("X-Fitbit-Signature", ""), request.get_data()
     ):
         abort(400)

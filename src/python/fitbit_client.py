@@ -1,10 +1,11 @@
 import dataclasses
 import datetime
+import hmac
 import requests
 import secrets
 
 from base64 import b64encode
-from hashlib import sha256
+from hashlib import sha1, sha256
 from typing import Optional
 from urllib.parse import urlencode
 
@@ -19,6 +20,15 @@ class FitbitClient:
 
     def create_code_verifier() -> str:
         return secrets.token_hex()
+
+    @property
+    def signing_key(self) -> str:
+        return self.client_secret + "&"
+
+    def verify_signature(self, header_signature: str, json_body: bytes) -> bool:
+        digest = hmac.digest(self.signing_key.encode("utf-8"), json_body, sha1)
+        b64_encoded = b64encode(digest)
+        return header_signature.encode("utf-8") == b64_encoded
 
     @property
     def authorization_token(self) -> str:

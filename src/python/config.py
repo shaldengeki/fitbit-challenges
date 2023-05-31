@@ -1,6 +1,3 @@
-import base64
-import hmac
-import hashlib
 import os
 
 from flask import Flask
@@ -27,7 +24,6 @@ app.config.update(
         client_id=os.getenv("FITBIT_CLIENT_ID", "testing"),
         client_secret=os.getenv("FITBIT_CLIENT_SECRET", "testing"),
     ),
-    FITBIT_SIGNING_KEY=os.getenv("FITBIT_CLIENT_SECRET", "testing") + "&",
     FRONTEND_URL=frontend_url,
     SECRET_KEY=os.getenv("FLASK_SECRET_KEY", "testing"),
     SQLALCHEMY_DATABASE_URI="postgresql://{user}:{password}@{host}/{db}".format(
@@ -37,14 +33,6 @@ app.config.update(
         db=os.getenv("DATABASE_NAME", "api_development"),
     ),
 )
-
-
-def verify_fitbit_signature(header_signature: str, json_body: bytes) -> bool:
-    digest = hmac.digest(
-        app.config["FITBIT_SIGNING_KEY"].encode("utf-8"), json_body, hashlib.sha1
-    )
-    b64_encoded = base64.b64encode(digest)
-    return header_signature.encode("utf-8") == b64_encoded
 
 
 def verify_fitbit_verification(request_code: str) -> bool:
