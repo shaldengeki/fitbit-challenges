@@ -8,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 
+from .fitbit_client import FitbitClient
+
 app = Flask(__name__)
 
 frontend_url_parts = [
@@ -21,8 +23,10 @@ if os.getenv("FRONTEND_PORT", None):
 frontend_url = "".join(frontend_url_parts)
 
 app.config.update(
-    FITBIT_CLIENT_ID=os.getenv("FITBIT_CLIENT_ID", "testing"),
-    FITBIT_CLIENT_SECRET=os.getenv("FITBIT_CLIENT_SECRET", "testing"),
+    FITBIT_CLIENT=FitbitClient(
+        client_id=os.getenv("FITBIT_CLIENT_ID", "testing"),
+        client_secret=os.getenv("FITBIT_CLIENT_SECRET", "testing"),
+    ),
     FITBIT_SIGNING_KEY=os.getenv("FITBIT_CLIENT_SECRET", "testing") + "&",
     FRONTEND_URL=frontend_url,
     SECRET_KEY=os.getenv("FLASK_SECRET_KEY", "testing"),

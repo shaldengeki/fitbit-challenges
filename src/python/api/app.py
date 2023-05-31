@@ -93,20 +93,6 @@ def fetch_display_name(user_id: str, access_token: str) -> str:
     return profile_request.json()["user"]["displayName"]
 
 
-def create_subscription(
-    user_id: str, access_token: str, fitbit_subscription_id: int
-) -> requests.Response:
-    sub_request = requests.post(
-        f"https://api.fitbit.com/1/user/{user_id}/activities/apiSubscriptions/{fitbit_subscription_id}.json",
-        headers={
-            "Authorization": f"Bearer {access_token}",
-            "Accept": "application/json",
-        },
-        json={},
-    )
-    return sub_request
-
-
 @app.route("/fitbit-authorize", methods=["GET"])
 def fitbit_authorize():
     if "code" not in request.args:
@@ -116,50 +102,28 @@ def fitbit_authorize():
         abort(400)
 
     # Attempt to exchange the auth code for the access & refresh tokens.
-    token_data = get_token_data(
-        app.config["FITBIT_CLIENT_ID"],
-        app.config["FITBIT_CLIENT_SECRET"],
-        request.args["code"],
-        session["fitbit_code_verifier"],
+    token_data = app.config["FITBIT_CLIENT"].get_token_data(
+        request.args["code"], session["fitbit_code_verifier"]
     )
     if token_data is None:
         abort(400)
 
-    display_name = fetch_display_name(token_data["user_id"], token_data["access_token"])
-
     # Create or update a user object with the new tokens.
-    insert_user = (
-        insert(models.User.__table__)
-        .values(
-            fitbit_user_id=token_data["user_id"],
-            display_name=display_name,
-            fitbit_access_token=token_data["access_token"],
-            fitbit_refresh_token=token_data["refresh_token"],
-        )
-        .on_conflict_do_update(
-            constraint="users_pkey",
-            set_={
-                "display_name": display_name,
-                "fitbit_access_token": token_data["access_token"],
-                "fitbit_refresh_token": token_data["refresh_token"],
-            },
+    db.session.execute(
+        models.User.create_with_user_id_and_tokens(
+            token_data["user_id"],
+            token_data["access_token"],
+            token_data["refresh_token"],
         )
     )
-    db.session.execute(insert_user)
     db.session.commit()
 
     user: models.User = models.User.query.filter(
         models.User.fitbit_user_id == token_data["user_id"]
     ).first()
-
-    resp = create_subscription(
-        token_data["user_id"], token_data["access_token"], user.fitbit_subscription_id
-    )
-    if resp.status_code not in (200, 201):
-        actual_subscription_id = resp.json()["subscriptionId"]
-        user.fitbit_subscription_id = actual_subscription_id
-        db.session.add(user)
-        db.session.commit()
+    user.create_subscription()
+    db.session.add(user)
+    db.session.commit()
 
     session["fitbit_user_id"] = token_data["user_id"]
     return redirect(app.config["FRONTEND_URL"])
