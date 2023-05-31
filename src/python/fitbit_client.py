@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import requests
 import secrets
 
@@ -68,3 +69,40 @@ class FitbitClient:
             "scope": " ".join(self.collections),
         }
         return "https:///www.fitbit.com/oauth2/authorize?" + urlencode(url_parameters)
+
+    def get_user_daily_activity_summary(
+        user_id: str, access_token: str, date: datetime.datetime
+    ) -> dict:
+        formatted_date: str = date.date().strftime("%Y-%m-%d")
+        return requests.get(
+            f"https://api.fitbit.com/1/user/{user_id}/activities/date/{formatted_date}.json",
+            headers={"Authorization": f"Bearer {access_token}"},
+        ).json()
+
+    @staticmethod
+    def request_indicates_expired_token(response: dict) -> bool:
+        return "errors" in response and any(
+            e["errorType"] == "expired_token" for e in response["errors"]
+        )
+
+    def refresh_user_tokens(self, refresh_token: str) -> dict:
+        url_parameters = urlencode(
+            {
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+            }
+        )
+
+        response = requests.post(
+            "https://api.fitbit.com/oauth2/token",
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": f"Basic {self.authorization_token}",
+            },
+            data=url_parameters,
+        )
+
+        if response.status_code not in (200, 201):
+            raise ValueError(f"Error when refreshing user tokens: {response.json()}")
+
+        return response.json()

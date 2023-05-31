@@ -9,6 +9,7 @@ from typing import Optional
 from urllib.parse import urlencode
 
 from ..config import app, db
+from ..fitbit_client import FitbitClient
 from ..models import SubscriptionNotification, User, UserActivity
 
 
@@ -40,38 +41,9 @@ def fetch_user_for_notification(
     return User.query.filter(User.fitbit_user_id == notification.fitbit_user_id).first()
 
 
-def request_indicates_expired_token(response: dict) -> bool:
-    return "errors" in response and any(
-        e["errorType"] == "expired_token" for e in response["errors"]
-    )
-
-
-def refresh_tokens_for_user(user: User, client_id: str, client_secret: str) -> User:
+def refresh_tokens_for_user(user: User, client: FitbitClient) -> User:
     print(f"Refreshing expired token for {user}.")
-    encoded_client_and_secret = b64encode(
-        f"{client_id}:{client_secret}".encode("utf-8")
-    ).decode("utf-8")
-
-    url_parameters = urlencode(
-        {
-            "grant_type": "refresh_token",
-            "refresh_token": user.fitbit_refresh_token,
-        }
-    )
-
-    response = requests.post(
-        "https://api.fitbit.com/oauth2/token",
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": f"Basic {encoded_client_and_secret}",
-        },
-        data=url_parameters,
-    )
-
-    if response.status_code not in (200, 201):
-        raise ValueError(f"Error when refreshing user tokens: {response.json()}")
-
-    data = response.json()
+    data = client.refresh_user_tokens(user.fitbit_refresh_token)
     user.fitbit_access_token = data["access_token"]
     user.fitbit_refresh_token = data["refresh_token"]
     db.session.add(user)
@@ -83,26 +55,20 @@ def refresh_tokens_for_user(user: User, client_id: str, client_secret: str) -> U
 def fetch_user_activity_for_notification(
     notification: SubscriptionNotification,
     user: User,
-    client_id: str,
-    client_secret: str,
+    client: FitbitClient,
 ) -> dict:
-    formatted_date: str = notification.date.strftime("%Y-%m-%d")
-    print(f"Fetching {notification.fitbit_user_id}'s activity for {formatted_date}.")
-    data = requests.get(
-        f"https://api.fitbit.com/1/user/{notification.fitbit_user_id}/activities/date/{formatted_date}.json",
-        headers={"Authorization": f"Bearer {user.fitbit_access_token}"},
-    ).json()
-
-    if request_indicates_expired_token(data):
-        user = refresh_tokens_for_user(user, client_id, client_secret)
-        return fetch_user_activity_for_notification(
-            notification, user, client_id, client_secret
-        )
+    print(f"Fetching {notification.fitbit_user_id}'s activity for {notification.date}.")
+    data = client.get_user_daily_activity_summary(
+        user.fitbit_access_token, notification.date
+    )
+    if client.request_indicates_expired_token(data):
+        user = refresh_tokens_for_user(user, client)
+        return fetch_user_activity_for_notification(notification, user, client)
 
     return data
 
 
-def process_subscription_notifications(client_id: str, client_secret: str) -> None:
+def process_subscription_notifications(client: FitbitClient) -> None:
     notification = maybe_fetch_subscription_notification()
     if notification is None:
         return
@@ -118,9 +84,7 @@ def process_subscription_notifications(client_id: str, client_secret: str) -> No
             db.session.add(notification)
             db.session.commit()
             return None
-        activity = fetch_user_activity_for_notification(
-            notification, user, client_id, client_secret
-        )
+        activity = fetch_user_activity_for_notification(notification, user, client)
         active_minutes: int = (
             activity["summary"]["veryActiveMinutes"]
             + activity["summary"]["fairlyActiveMinutes"]
@@ -183,12 +147,11 @@ max_delay = 10
 
 def main() -> int:
     with app.app_context():
-        client_id = app.config["FITBIT_CLIENT_ID"]
-        client_secret = app.config["FITBIT_CLIENT_SECRET"]
+        client = app.config["FITBIT_CLIENT"]
 
         while True:
             start = time.time()
-            process_subscription_notifications(client_id, client_secret)
+            process_subscription_notifications(client)
             delay = (start + max_delay) - time.time()
             if delay > 0:
                 time.sleep(delay)
