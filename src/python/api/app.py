@@ -52,47 +52,6 @@ def fitbit_notifications():
     return "", 204
 
 
-def get_token_data(
-    client_id: str, client_secret: str, authorization_code: str, code_verifier: str
-) -> Optional[dict]:
-    encoded_client_and_secret = b64encode(
-        f"{client_id}:{client_secret}".encode("utf-8")
-    ).decode("utf-8")
-
-    url_parameters = urlencode(
-        {
-            "client_id": client_id,
-            "code": authorization_code,
-            "code_verifier": code_verifier,
-            "grant_type": "authorization_code",
-        }
-    )
-
-    auth_request = requests.post(
-        url="https://api.fitbit.com/oauth2/token?" + url_parameters,
-        headers={
-            "Authorization": f"Basic {encoded_client_and_secret}",
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data=url_parameters,
-    )
-
-    if auth_request.status_code != 200:
-        return None
-
-    return auth_request.json()
-
-
-def fetch_display_name(user_id: str, access_token: str) -> str:
-    profile_request = requests.get(
-        f"https://api.fitbit.com/1/user/{user_id}/profile.json",
-        headers={
-            "Authorization": f"Bearer {access_token}",
-        },
-    )
-    return profile_request.json()["user"]["displayName"]
-
-
 @app.route("/fitbit-authorize", methods=["GET"])
 def fitbit_authorize():
     if "code" not in request.args:
