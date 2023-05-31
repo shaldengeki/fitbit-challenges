@@ -32,7 +32,9 @@ class FitbitClient:
 
     @property
     def authorization_token(self) -> str:
-        return b64encode(f"{self.client_id}:{self.client_secret}".encode("utf-8"))
+        return b64encode(
+            f"{self.client_id}:{self.client_secret}".encode("utf-8")
+        ).decode("utf-8")
 
     def get_token_data(
         self, authorization_code: str, code_verifier: str
