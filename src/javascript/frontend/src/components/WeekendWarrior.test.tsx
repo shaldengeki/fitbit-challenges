@@ -2,14 +2,29 @@ import { render, screen } from '@testing-library/react';
 import WeekendWarrior from './WeekendWarrior';
 import { MockedProvider } from '@apollo/react-testing';
 import React from 'react';
+import { FETCH_CURRENT_USER_QUERY } from './UserActivityForm';
 
+const testFetchCurrentUserMock = {
+    request: {
+      query: FETCH_CURRENT_USER_QUERY
+    },
+    result: {
+      data: {
+        currentUser: null
+      }
+    }
+  }
 
 it('should render when no activities exist', async () => {
+    const users = [
+        {'fitbitUserId': 'a', 'displayName': 'A', 'createdAt': 0, 'activities': []},
+        {'fitbitUserId': 'b', 'displayName': 'B', 'createdAt': 0, 'activities': []},
+    ]
     render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[testFetchCurrentUserMock]}>
             <WeekendWarrior
                 id={1}
-                users={['foo', 'bar']}
+                users={users}
                 startAt={0}
                 endAt={0}
                 ended={false}
@@ -23,16 +38,20 @@ it('should render when no activities exist', async () => {
   });
 
 it('should select just the latest activity per day', async () => {
+    const users = [
+        {'fitbitUserId': 'a', 'displayName': 'A', 'createdAt': 0, 'activities': []},
+        {'fitbitUserId': 'b', 'displayName': 'B', 'createdAt': 0, 'activities': []},
+    ]
     const activities = [
         // User has two records for day 0, one with 1 step, and one with 2 steps.
-        {'id': 1, 'user': 'foo', 'createdAt': 0, 'recordDate': '1000-11-11', 'steps': 1, 'activeMinutes': 1, 'distanceKm': 1},
-        {'id': 2, 'user': 'foo', 'createdAt': 1, 'recordDate': '1000-11-11', 'steps': 2, 'activeMinutes': 2, 'distanceKm': 2},
+        {'id': 1, 'user': users[0].fitbitUserId, 'createdAt': 0, 'recordDate': '1000-11-11', 'steps': 1, 'activeMinutes': 1, 'distanceKm': 1},
+        {'id': 2, 'user': users[0].fitbitUserId, 'createdAt': 1, 'recordDate': '1000-11-11', 'steps': 2, 'activeMinutes': 2, 'distanceKm': 2},
     ];
     render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[testFetchCurrentUserMock]}>
         <WeekendWarrior
             id={1}
-            users={['foo', 'bar']}
+            users={users}
             startAt={0}
             endAt={0}
             ended={false}
@@ -43,5 +62,5 @@ it('should select just the latest activity per day', async () => {
         </MockedProvider>,
     );
     // user only has 2 steps.
-    expect(await screen.findByText("2")).toBeInTheDocument();
+    expect(await screen.findByText("A took 1 more step on Tuesday")).toBeInTheDocument();
 });

@@ -8,7 +8,7 @@ from graphql import (
     GraphQLString,
 )
 from sqlalchemy import desc
-from typing import Any, Type, Optional
+from typing import Type, Optional
 
 from ....models import User, UserActivity
 from .user_activities import user_activity_type
@@ -54,9 +54,18 @@ user_type = GraphQLObjectType(
 )
 
 
-def fetch_current_user(
-    user_model: Type[User], params: dict[str, Any]
-) -> Optional[User]:
+def fetch_users(user_model: Type[User]) -> list[User]:
+    return user_model.query.all()
+
+
+def users_field(user_model: Type[User]) -> GraphQLField:
+    return GraphQLField(
+        GraphQLList(user_type),
+        resolve=lambda root, info, **args: fetch_users(user_model),
+    )
+
+
+def fetch_current_user(user_model: Type[User]) -> Optional[User]:
     if "fitbit_user_id" not in session:
         return None
     user = user_model.query.filter(
@@ -71,5 +80,5 @@ def fetch_current_user(
 def current_user_field(user_model: Type[User]) -> GraphQLField:
     return GraphQLField(
         user_type,
-        resolve=lambda root, info, **args: fetch_current_user(user_model, args),
+        resolve=lambda root, info, **args: fetch_current_user(user_model),
     )

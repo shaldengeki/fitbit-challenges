@@ -1,10 +1,21 @@
 import React from 'react';
 import Confetti from './Confetti';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, gql, useQuery } from '@apollo/client';
 import {FETCH_WORKWEEK_HUSTLE_QUERY} from '../views/ChallengeView';
 import {getCurrentUnixTime} from '../DateUtils';
 import Activity, {emptyActivity} from '../types/Activity';
 import {CancelButton, SubmitButton} from '../components/FormButton';
+import User from '../types/User';
+
+export const FETCH_CURRENT_USER_QUERY = gql`
+    query FetchCurrentUser {
+          currentUser {
+            fitbitUserId
+            displayName
+            createdAt
+          }
+      }
+`;
 
 const CREATE_USER_ACTIVITY_MUTATION = gql`
     mutation CreateUserActivity(
@@ -112,7 +123,7 @@ const MutationSuccessDialog = ({ reset }: MutationSuccessDialogProps) => {
 
 type UserActivityFormProps = {
     challengeId: number
-    users: string[]
+    users: User[]
     startAt: number
     endAt: number
     editedActivity: Activity
@@ -165,6 +176,11 @@ const UserActivityForm = ({ challengeId, users, startAt, endAt, editedActivity, 
         }
     );
 
+    const { loading: fetchUserLoading, error: fetchUserError, data: fetchUserData } = useQuery(
+        FETCH_CURRENT_USER_QUERY,
+    );
+
+
     if (createUserActivityLoading || updateUserActivityLoading) {
         return <p>Loading...</p>
     }
@@ -173,12 +189,12 @@ const UserActivityForm = ({ challengeId, users, startAt, endAt, editedActivity, 
 
     const id = (editedActivity.id === 0) ? 0 : editedActivity.id;
     const date = (editedActivity.recordDate === "") ? getDate(maxDate) : editedActivity.recordDate;
-    const selectedUser = (editedActivity.user === "") ? users[0] : editedActivity.user;
+    const selectedUser = (editedActivity.user === "") ? users[0].fitbitUserId : editedActivity.user;
     const userElements = users.map((user) => {
-        if (user === selectedUser) {
-            return <option key={user} value={user}>{user}</option>
+        if (user.fitbitUserId === selectedUser) {
+            return <option key={user.fitbitUserId} value={user.fitbitUserId}>{user.displayName}</option>
         } else {
-            return <option key={user} value={user}>{user}</option>
+            return <option key={user.fitbitUserId} value={user.fitbitUserId}>{user.displayName}</option>
         }
     });
     const steps = (editedActivity.steps === 0) ? 0 : editedActivity.steps;
@@ -208,20 +224,31 @@ const UserActivityForm = ({ challengeId, users, startAt, endAt, editedActivity, 
                 max={getDate(maxDate)}
                 min={getDate(startAt)}
             />
-            <select
-                className="rounded p-0.5"
-                name="user"
-                value={selectedUser}
-                onChange={(e) => {
-                    const updatedActivity = {
-                        ...editedActivity,
-                        user: e.target.value
-                    }
-                    editActivityHook(updatedActivity)
-                }}
-            >
-                {userElements}
-            </select>
+            {
+                fetchUserLoading && <span>Loading users...</span>
+            }
+            {
+                fetchUserError && <span>Error loading users!</span>
+            }
+            {
+                fetchUserData && fetchUserData.currentUser && <input hidden name="user" value={fetchUserData.currentUser.fitbitUserId} />
+            }
+            {
+                fetchUserData && !fetchUserData.currentUser && <select
+                    className="rounded p-0.5"
+                    name="user"
+                    value={selectedUser}
+                    onChange={(e) => {
+                        const updatedActivity = {
+                            ...editedActivity,
+                            user: e.target.value
+                        }
+                        editActivityHook(updatedActivity)
+                    }}
+                >
+                    {userElements}
+                </select>
+            }
             <input
                 className="rounded p-0.5 w-40"
                 name="steps"
