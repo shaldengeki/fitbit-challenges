@@ -1,17 +1,20 @@
-from ..config import db
 import datetime
+from sqlalchemy.orm import Mapped, mapped_column
+
+from ..config import db
 
 
 class Challenge(db.Model):  # type: ignore
     __tablename__ = "challenges"
-    id = db.Column(db.Integer, primary_key=True)
-    challenge_type = db.Column(db.Integer, nullable=False)
-    users = db.Column(db.Unicode(500), nullable=False)
-    created_at = db.Column(
-        db.TIMESTAMP(timezone=True), default=datetime.datetime.utcnow, nullable=False
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    challenge_type: Mapped[int] = mapped_column(db.Integer)
+    users: Mapped[str] = mapped_column(db.Unicode(500))
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        db.TIMESTAMP(timezone=True), default=datetime.datetime.utcnow
     )
-    start_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
-    end_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+    start_at: Mapped[datetime.datetime] = mapped_column(db.TIMESTAMP(timezone=True))
+    end_at: Mapped[datetime.datetime] = mapped_column(db.TIMESTAMP(timezone=True))
 
     def __repr__(self) -> str:
         return "<Challenge {id}>".format(id=self.id)
