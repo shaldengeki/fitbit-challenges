@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 
 from ..config import db
+from ..fitbit_client import FitbitClient
 
 
 class Challenge(db.Model):  # type: ignore
@@ -136,21 +137,22 @@ class User(db.Model):  # type: ignore
             )
         )
 
-    def create_subscription(self) -> Optional["FitbitSubscription"]:
-        sub_request = requests.post(
-            f"https://api.fitbit.com/1/user/{self.fitbit_user_id}/activities/apiSubscriptions/{self.fitbit_subscription_id}.json",
-            headers={
-                "Authorization": f"Bearer {self.fitbit_access_token}",
-                "Accept": "application/json",
-            },
-            json={},
-        )
+    def create_subscription(
+        self, client: FitbitClient
+    ) -> Optional["FitbitSubscription"]:
+        if self.fitbit_subscription is not None:
+            return self.fitbit_subscription
 
-        if sub_request.status_code not in (200, 201):
-            actual_subscription_id = sub_request.json()["subscriptionId"]
+        new_subscription = FitbitSubscription(fitbit_user_id=self.fitbit_user_id)
+        db.session.add(new_subscription)
+        db.session.commit()
+
+        if not client.create_subscription(
+            self.fitbit_user_id, new_subscription.id, self.fitbit_access_token
+        ):
             return None
 
-        return FitbitSubscription(fitbit_user_id=self.fitbit_user_id)
+        return new_subscription
 
 
 class UserActivity(db.Model):  # type: ignore

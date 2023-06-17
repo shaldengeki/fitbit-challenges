@@ -80,8 +80,10 @@ def fitbit_authorize():
     user: models.User = models.User.query.filter(
         models.User.fitbit_user_id == token_data["user_id"]
     ).first()
-    user.create_subscription()
+    subscription = user.create_subscription()
     db.session.add(user)
+    if subscription is not None:
+        db.session.add(subscription)
     db.session.commit()
 
     session["fitbit_user_id"] = token_data["user_id"]

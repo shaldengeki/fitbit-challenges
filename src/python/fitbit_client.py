@@ -123,3 +123,16 @@ class FitbitClient:
             raise ValueError(f"Error when refreshing user tokens: {response.json()}")
 
         return response.json()
+
+    def create_subscription(
+        self, user_id: str, subscription_id: int, access_token: str
+    ) -> bool:
+        sub_request = requests.post(
+            f"https://api.fitbit.com/1/user/{user_id}/activities/apiSubscriptions/{subscription_id}.json",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json",
+            },
+            json={},
+        )
+        return sub_request.status_code in (200, 201)
