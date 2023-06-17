@@ -139,7 +139,6 @@ def test_authorization_url():
 def test_get_token_data_with_successful_request(
     default_client: FitbitClient, monkeypatch
 ):
-    # Stub out token request.
     response = {"expected_field": "expected_value"}
 
     def mock_post(*args, **kwargs) -> MockPost:
@@ -154,7 +153,6 @@ def test_get_token_data_with_successful_request(
 def test_get_token_data_with_unsuccessful_request(
     default_client: FitbitClient, monkeypatch
 ):
-    # Stub out token request.
     response = None
 
     def mock_post(*args, **kwargs) -> MockPost:
