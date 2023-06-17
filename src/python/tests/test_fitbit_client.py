@@ -216,3 +216,29 @@ def test_refresh_user_tokens_with_failed_request(
     monkeypatch.setattr(requests, "post", mock_post)
     with pytest.raises(ValueError):
         default_client.refresh_user_tokens("test-refresh-token")
+
+
+def test_create_subscription_with_successful_request(
+    default_client: FitbitClient, monkeypatch
+) -> None:
+    response = {"expected_field": "expected_value"}
+
+    def mock_post(*args, **kwargs) -> MockPost:
+        return MockPost(response, 200)
+
+    monkeypatch.setattr(requests, "post", mock_post)
+    assert default_client.create_subscription("test-user-id", 42, "test-access-token")
+
+
+def test_create_subscription_with_failed_request(
+    default_client: FitbitClient, monkeypatch
+) -> None:
+    response = None
+
+    def mock_post(*args, **kwargs) -> MockPost:
+        return MockPost(response, 400)
+
+    monkeypatch.setattr(requests, "post", mock_post)
+    assert not default_client.create_subscription(
+        "test-user-id", 42, "test-access-token"
+    )
