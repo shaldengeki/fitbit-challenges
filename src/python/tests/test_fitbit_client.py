@@ -1,15 +1,29 @@
 from ..fitbit_client import FitbitClient
 import logging
+import pytest
+import requests
 
 
-def test_signing_key():
-    c = FitbitClient(
+@pytest.fixture
+def default_client():
+    return FitbitClient(
         logger=logging.Logger("test-fitbit-client"),
         client_id="test-client-id",
         client_secret="test-client-secret",
     )
 
-    assert "test-client-secret&" == c.signing_key
+
+class MockPost:
+    def __init__(self, response: dict[str, str], status_code: int):
+        self.response = response
+        self.status_code = status_code
+
+    def json(self):
+        return self.response
+
+
+def test_signing_key(default_client):
+    assert "test-client-secret&" == default_client.signing_key
 
 
 def test_verify_signature_correct():
