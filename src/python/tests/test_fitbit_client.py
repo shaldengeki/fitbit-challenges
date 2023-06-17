@@ -122,3 +122,18 @@ def test_authorization_url():
         "https://www.fitbit.com/oauth2/authorize?client_id=ABC123&response_type=code&code_challenge=-4cf-Mzo_qg9-uq0F4QwWhRh4AjcAqNx7SbYVsdmyQM&code_challenge_method=S256&scope=activity+heartrate+profile+social"
         == c.authorization_url("01234567890123456789012345678901234567890123456789")
     )
+
+
+def test_get_token_data_with_successful_request(
+    default_client: FitbitClient, monkeypatch
+):
+    # Stub out token request.
+    response = {"expected_field": "expected_value"}
+
+    def mock_post(*args, **kwargs) -> MockPost:
+        return MockPost(response, 200)
+
+    monkeypatch.setattr(requests, "post", mock_post)
+    assert response == default_client.get_token_data(
+        "test-auth-code", "test-code-verifier"
+    )
