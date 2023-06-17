@@ -2,6 +2,7 @@ from ..fitbit_client import FitbitClient
 import logging
 import pytest
 import requests
+from typing import Optional
 
 
 @pytest.fixture
@@ -14,9 +15,20 @@ def default_client():
 
 
 class MockPost:
-    def __init__(self, response: dict[str, str], status_code: int):
+    def __init__(
+        self,
+        response: dict[str, str],
+        status_code: int,
+        url: str = "test-url",
+        headers: Optional[dict[str, str]] = None,
+    ):
         self.response = response
         self.status_code = status_code
+        self.url = url
+        if headers is None:
+            headers = {}
+        self.headers = headers
+        self.text = str(self.response)
 
     def json(self):
         return self.response
@@ -132,6 +144,21 @@ def test_get_token_data_with_successful_request(
 
     def mock_post(*args, **kwargs) -> MockPost:
         return MockPost(response, 200)
+
+    monkeypatch.setattr(requests, "post", mock_post)
+    assert response == default_client.get_token_data(
+        "test-auth-code", "test-code-verifier"
+    )
+
+
+def test_get_token_data_with_unsuccessful_request(
+    default_client: FitbitClient, monkeypatch
+):
+    # Stub out token request.
+    response = None
+
+    def mock_post(*args, **kwargs) -> MockPost:
+        return MockPost(response, 400)
 
     monkeypatch.setattr(requests, "post", mock_post)
     assert response == default_client.get_token_data(
