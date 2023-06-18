@@ -10,7 +10,7 @@ psycopg2
 pylint
 pytest
 requests
-sqlalchemy
+SQLAlchemy>=2.0.16
 sqlalchemy[mypy]
 types-Flask-Cors
 types-Flask-Migrate

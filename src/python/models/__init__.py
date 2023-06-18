@@ -4,6 +4,7 @@ import requests
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import mapped_column
 from typing import Optional
 
 from ..config import db
