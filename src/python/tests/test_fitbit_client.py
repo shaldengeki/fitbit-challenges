@@ -160,9 +160,7 @@ def test_get_token_data_with_failed_request(
         return MockPost(response, 400)
 
     monkeypatch.setattr(requests, "post", mock_post)
-    assert response == default_client.get_token_data(
-        "test-auth-code", "test-code-verifier"
-    )
+    assert default_client.get_token_data("test-auth-code", "test-code-verifier") is None
 
 
 def test_get_user_daily_activity_summary_with_successful_request(
