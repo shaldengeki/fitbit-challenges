@@ -28,7 +28,7 @@ class Challenge(db.Model):  # type: ignore
 
     @property
     def ended(self) -> bool:
-        return datetime.datetime.now() >= self.end_at
+        return datetime.datetime.now(tz=datetime.timezone.utc) >= self.end_at
 
     @property
     def seal_at(self) -> datetime.datetime:
@@ -36,7 +36,7 @@ class Challenge(db.Model):  # type: ignore
 
     @property
     def sealed(self) -> bool:
-        return datetime.datetime.now() >= self.seal_at
+        return datetime.datetime.now(tz=datetime.timezone.utc) >= self.seal_at
 
 
 class FitbitSubscription(db.Model):  # type: ignore
