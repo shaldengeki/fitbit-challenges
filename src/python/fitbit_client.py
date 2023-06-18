@@ -20,7 +20,7 @@ class FitbitClient:
         default_factory=lambda: ["activity", "heartrate", "profile", "social"]
     )
 
-    def create_code_verifier() -> str:
+    def create_code_verifier(self) -> str:
         return secrets.token_hex()
 
     @property

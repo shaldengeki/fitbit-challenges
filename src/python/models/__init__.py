@@ -57,7 +57,9 @@ class SubscriptionNotification(db.Model):  # type: ignore
     created_at: Mapped[datetime.datetime] = mapped_column(
         db.TIMESTAMP(timezone=True), default=datetime.datetime.utcnow
     )
-    processed_at: Mapped[datetime.datetime] = mapped_column(db.TIMESTAMP(timezone=True))
+    processed_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+        db.TIMESTAMP(timezone=True)
+    )
     collection_type: Mapped[str]
     date: Mapped[datetime.datetime] = mapped_column(db.TIMESTAMP(timezone=True))
     fitbit_user_id: Mapped[str] = mapped_column(ForeignKey("users.fitbit_user_id"))
@@ -150,6 +152,8 @@ class User(db.Model):  # type: ignore
         if not client.create_subscription(
             self.fitbit_user_id, new_subscription.id, self.fitbit_access_token
         ):
+            db.session.delete(new_subscription)
+            db.session.commit()
             return None
 
         return new_subscription

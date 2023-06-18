@@ -154,7 +154,7 @@ def test_get_token_data_with_successful_request(
 def test_get_token_data_with_failed_request(
     default_client: FitbitClient, monkeypatch
 ) -> None:
-    response = None
+    response = {"error": "some-error"}
 
     def mock_post(*args, **kwargs) -> MockPost:
         return MockPost(response, 400)
@@ -182,7 +182,7 @@ def test_get_user_daily_activity_summary_with_successful_request(
 def test_get_user_daily_activity_summary_with_failed_request(
     default_client: FitbitClient, monkeypatch
 ) -> None:
-    response = {"errors": ["some errors"]}
+    response = {"error": "some-error"}
 
     def mock_get(*args, **kwargs) -> MockPost:
         return MockPost(response, 400)
@@ -208,7 +208,7 @@ def test_refresh_user_tokens_with_successful_request(
 def test_refresh_user_tokens_with_failed_request(
     default_client: FitbitClient, monkeypatch
 ) -> None:
-    response = None
+    response = {"error": "some-error"}
 
     def mock_post(*args, **kwargs) -> MockPost:
         return MockPost(response, 400)
@@ -233,7 +233,7 @@ def test_create_subscription_with_successful_request(
 def test_create_subscription_with_failed_request(
     default_client: FitbitClient, monkeypatch
 ) -> None:
-    response = None
+    response = {"error": "some-error"}
 
     def mock_post(*args, **kwargs) -> MockPost:
         return MockPost(response, 400)

@@ -11,6 +11,7 @@ pylint
 pytest
 requests
 sqlalchemy
-sqlalchemy-stubs
+sqlalchemy[mypy]
 types-Flask-Cors
 types-Flask-Migrate
+types-requests
