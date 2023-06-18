@@ -7,7 +7,7 @@ from typing import Optional
 
 
 @pytest.fixture
-def default_client():
+def default_client() -> FitbitClient:
     return FitbitClient(
         logger=logging.Logger("test-fitbit-client"),
         client_id="test-client-id",
@@ -31,11 +31,11 @@ class MockPost:
         self.headers = headers
         self.text = str(self.response)
 
-    def json(self):
+    def json(self) -> dict[str, str]:
         return self.response
 
 
-def test_signing_key(default_client) -> None:
+def test_signing_key(default_client: FitbitClient) -> None:
     assert "test-client-secret&" == default_client.signing_key
 
 
