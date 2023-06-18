@@ -7,8 +7,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import mapped_column
 from typing import Optional
 
-from ..config import db
-from ..fitbit_client import FitbitClient
+from .config import db
+from .fitbit_client import FitbitClient
 
 
 class Challenge(db.Model):  # type: ignore
