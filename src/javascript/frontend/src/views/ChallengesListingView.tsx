@@ -234,10 +234,10 @@ const ChallengesListingView = () => {
     const [editFormShowing, setEditFormShowing] = useState(false);
     const [editedChallenge, setEditedChallenge] = useState({ ...emptyChallenge, startAt: nextMonday() });
 
-    let currentChallenges: Challenge[] = [];
+    let activeChallenges: Challenge[] = [];
     let pastChallenges: Challenge[] = [];
-    if (data && data.currentUser && data.currentUser.currentChallenges) {
-        currentChallenges = data.currentChallenges;
+    if (data && data.currentUser && data.currentUser.activeChallenges) {
+        activeChallenges = data.activeChallenges;
     }
     if (data && data.currentUser && data.currentUser.pastChallenges) {
         pastChallenges = data.pastChallenges;
@@ -255,9 +255,9 @@ const ChallengesListingView = () => {
                 { error && <p>Error: {error.message}</p> }
                 <div className="py-4 border-b-2 border-slate-50 dark:border-neutral-600">
                     <h1 className="text-2xl">Current challenges</h1>
-                    { currentChallenges.length < 1 && <p>No current challenges found!</p> }
-                    { currentChallenges.length >= 1 &&
-                        <ChallengesListingTable challenges={currentChallenges} />
+                    { activeChallenges.length < 1 && <p>No current challenges found!</p> }
+                    { activeChallenges.length >= 1 &&
+                        <ChallengesListingTable challenges={activeChallenges} />
                     }
                 </div>
                 <div className="py-4">
