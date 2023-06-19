@@ -39,7 +39,7 @@ def upgrade():
     op.create_index(
         "bingo_tiles_bingo_card_id_coordinate_y_coordinate_x",
         "bingo_tiles",
-        columns=["bingo_card_id", "coordinate_y", "coordiante_x"],
+        columns=["bingo_card_id", "coordinate_y", "coordinate_x"],
         unique=True,
     )
 
