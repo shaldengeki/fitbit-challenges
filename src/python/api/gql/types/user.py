@@ -7,19 +7,10 @@ from graphql import (
     GraphQLNonNull,
     GraphQLString,
 )
-from sqlalchemy import desc
 from typing import Type, Optional
 
-from ....models import User, UserActivity
+from ....models import User
 from .user_activities import user_activity_type
-
-
-def activities_resolver(user: User, info, **args) -> list[UserActivity]:
-    return (
-        UserActivity.query.filter(UserActivity.user == user.fitbit_user_id)
-        .order_by(desc(UserActivity.created_at))
-        .all()
-    )
 
 
 def user_fields() -> dict[str, GraphQLField]:
@@ -42,7 +33,9 @@ def user_fields() -> dict[str, GraphQLField]:
         "activities": GraphQLField(
             GraphQLNonNull(GraphQLList(user_activity_type)),
             description="The activities recorded by this user.",
-            resolve=activities_resolver,
+            resolve=lambda user, *args, **kwargs: sorted(
+                user.activities, key=lambda a: a.created_at, reverse=True
+            ),
         ),
     }
 
