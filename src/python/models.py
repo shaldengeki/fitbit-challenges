@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import mapped_column
-from typing import Optional
+from typing import Generator, Optional
 
 from .config import db
 from .fitbit_client import FitbitClient
@@ -214,12 +214,12 @@ class BingoCard(db.Model):  # type: ignore
     def __repr__(self) -> str:
         return "<BingoCard {id}>".format(id=self.id)
 
-    def flipped_tiles(self) -> list["BingoTile"]:
+    def flipped_tiles(self) -> Generator["BingoTile", None, None]:
         for tile in self.bingo_tiles:
             if tile.flipped:
                 yield tile
 
-    def unflipped_tiles(self) -> list["BingoTile"]:
+    def unflipped_tiles(self) -> Generator["BingoTile", None, None]:
         for tile in self.bingo_tiles:
             if not tile.flipped:
                 yield tile
