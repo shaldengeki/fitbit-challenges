@@ -214,6 +214,35 @@ class BingoCard(db.Model):  # type: ignore
     def __repr__(self) -> str:
         return "<BingoCard {id}>".format(id=self.id)
 
+    def flipped_tiles(self) -> list["BingoTile"]:
+        for tile in self.bingo_tiles:
+            if tile.flipped:
+                yield tile
+
+    def unflipped_tiles(self) -> list["BingoTile"]:
+        for tile in self.bingo_tiles:
+            if not tile.flipped:
+                yield tile
+
+    def total_cost_steps(self) -> int:
+        return sum(tile.steps for tile in self.bingo_tiles if tile.steps is not None)
+
+    def total_cost_active_minutes(self) -> int:
+        return sum(
+            tile.active_minutes
+            for tile in self.bingo_tiles
+            if tile.active_minutes is not None
+        )
+
+    def total_cost_distance_km(self) -> decimal.Decimal:
+        return decimal.Decimal(
+            sum(
+                tile.distance_km
+                for tile in self.bingo_tiles
+                if tile.distance_km is not None
+            )
+        )
+
 
 class BingoTile(db.Model):  # type: ignore
     __tablename__ = "bingo_tiles"
