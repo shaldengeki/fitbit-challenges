@@ -10,21 +10,37 @@ import User from '../types/User';
 
 export const FETCH_CHALLENGES_QUERY = gql`
     query FetchChallenges {
-          challenges {
-              id
-              challengeType
-              users {
-                fitbitUserId
-                displayName
-              }
-              createdAt
-              startAt
-              endAt
-              ended
-              sealAt
-              sealed
-          }
-      }
+        currentUser {
+            activeChallenges {
+                id
+                challengeType
+                users {
+                  fitbitUserId
+                  displayName
+                }
+                createdAt
+                startAt
+                endAt
+                ended
+                sealAt
+                sealed
+            }
+            pastChallenges {
+                id
+                challengeType
+                users {
+                  fitbitUserId
+                  displayName
+                }
+                createdAt
+                startAt
+                endAt
+                ended
+                sealAt
+                sealed
+            }
+        }
+    }
 `;
 
 export const FETCH_USERS_QUERY = gql`
@@ -218,10 +234,13 @@ const ChallengesListingView = () => {
     const [editFormShowing, setEditFormShowing] = useState(false);
     const [editedChallenge, setEditedChallenge] = useState({ ...emptyChallenge, startAt: nextMonday() });
 
-    let challenges: Challenge[] = [];
-    if (data && data.challenges) {
-        challenges = data.challenges.slice(0);
-        challenges = challenges.sort((a: Challenge, b: Challenge) => b.endAt - a.endAt);
+    let currentChallenges: Challenge[] = [];
+    let pastChallenges: Challenge[] = [];
+    if (data && data.currentChallenges) {
+        currentChallenges = data.currentChallenges;
+    }
+    if (data && data.pastChallenges) {
+        pastChallenges = data.pastChallenges;
     }
 
     return (
@@ -234,8 +253,21 @@ const ChallengesListingView = () => {
             <div>
                 { loading && <p>Loading...</p> }
                 { error && <p>Error: {error.message}</p> }
-                { data && data.challenges && data.challenges.length < 1 && <p>No challenges found!</p> }
-                { data && data.challenges && <ChallengesListingTable challenges={challenges} /> }
+                <div className="py-4 border-b-2 border-slate-50 dark:border-neutral-600">
+                    <h1 className="text-2xl">Current challenges</h1>
+                    { currentChallenges.length < 1 && <p>No current challenges found!</p> }
+                    { currentChallenges.length >= 1 &&
+                        <ChallengesListingTable challenges={currentChallenges} />
+                    }
+                </div>
+                <div className="py-4">
+                    <h1 className="text-2xl">Past challenges</h1>
+                    { pastChallenges.length < 1 && <p>No prior challenges found!</p> }
+                    { pastChallenges.length >= 1 &&
+                        <ChallengesListingTable challenges={pastChallenges} />
+                    }
+
+                </div>
             </div>
         </PageContainer>
     )
