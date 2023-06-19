@@ -14,7 +14,7 @@ from sqlalchemy import desc
 from typing import Any, Type
 
 from ....config import db
-from ....models import Challenge, User
+from ....models import Challenge
 from .user_activities import user_activity_type
 from .user import user_type
 

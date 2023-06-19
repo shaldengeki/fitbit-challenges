@@ -14,6 +14,8 @@ from .user_activities import user_activity_type
 
 
 def user_fields() -> dict[str, GraphQLField]:
+    from .challenge import challenge_type
+
     return {
         "fitbitUserId": GraphQLField(
             GraphQLNonNull(GraphQLString),
@@ -35,6 +37,27 @@ def user_fields() -> dict[str, GraphQLField]:
             description="The activities recorded by this user.",
             resolve=lambda user, *args, **kwargs: sorted(
                 user.activities, key=lambda a: a.created_at, reverse=True
+            ),
+        ),
+        "challenges": GraphQLField(
+            GraphQLNonNull(GraphQLList(challenge_type)),
+            description="The list of challenges this user has ever participated in.",
+            resolve=lambda user, *args, **kwargs: sorted(
+                user.challenges(), key=lambda c: c.created_at, reverse=True
+            ),
+        ),
+        "activeChallenges": GraphQLField(
+            GraphQLNonNull(GraphQLList(challenge_type)),
+            description="The list of challenges this user is currently participating in.",
+            resolve=lambda user, *args, **kwargs: sorted(
+                user.active_challenges(), key=lambda c: c.created_at, reverse=True
+            ),
+        ),
+        "pastChallenges": GraphQLField(
+            GraphQLNonNull(GraphQLList(challenge_type)),
+            description="The list of past challenges this user has participated in.",
+            resolve=lambda user, *args, **kwargs: sorted(
+                user.past_challenges(), key=lambda c: c.created_at, reverse=True
             ),
         ),
     }

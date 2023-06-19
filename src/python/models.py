@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.sql import func
+from sqlalchemy.sql.functions import now
 from typing import Generator, Optional
 
 from .config import db
@@ -187,6 +188,18 @@ class User(db.Model):  # type: ignore
             return None
 
         return new_subscription
+
+    def challenges_query(self):
+        return Challenge.query.filter(Challenge.users.contains(self.fitbit_user_id))
+
+    def challenges(self) -> list["Challenge"]:
+        return self.challenges_query().all()
+
+    def past_challenges(self) -> list["Challenge"]:
+        return self.challenges_query().filter(Challenge.end_at < now()).all()
+
+    def active_challenges(self) -> list["Challenge"]:
+        return self.challenges_query().filter(Challenge.end_at >= now()).all()
 
 
 class UserActivity(db.Model):  # type: ignore
