@@ -236,10 +236,10 @@ const ChallengesListingView = () => {
 
     let currentChallenges: Challenge[] = [];
     let pastChallenges: Challenge[] = [];
-    if (data && data.currentChallenges) {
+    if (data && data.currentUser && data.currentUser.currentChallenges) {
         currentChallenges = data.currentChallenges;
     }
-    if (data && data.pastChallenges) {
+    if (data && data.currentUser && data.currentUser.pastChallenges) {
         pastChallenges = data.pastChallenges;
     }
 
