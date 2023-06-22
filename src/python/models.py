@@ -28,7 +28,7 @@ class Challenge(db.Model):  # type: ignore
     start_at: Mapped[datetime.datetime] = mapped_column(db.TIMESTAMP(timezone=True))
     end_at: Mapped[datetime.datetime] = mapped_column(db.TIMESTAMP(timezone=True))
 
-    bingo_card: Mapped["BingoCard"] = relationship(back_populates="challenge")
+    bingo_cards: Mapped[list["BingoCard"]] = relationship(back_populates="challenge")
 
     def __repr__(self) -> str:
         return "<Challenge {id}>".format(id=self.id)
@@ -57,6 +57,19 @@ class Challenge(db.Model):  # type: ignore
     def activities(self) -> list["UserActivity"]:
         return (
             UserActivity.query.filter(UserActivity.user.in_(self.users.split(",")))
+            .filter(
+                func.date_trunc("day", UserActivity.record_date)
+                >= func.date_trunc("day", self.start_at)
+            )
+            .filter(UserActivity.record_date < self.end_at)
+            .filter(UserActivity.created_at < self.seal_at)
+            .order_by(desc(UserActivity.created_at))
+            .all()
+        )
+
+    def activities_for_user(self, user: "User") -> list["UserActivity"]:
+        return (
+            UserActivity.query.filter(UserActivity.user == user.fitbit_user_id)
             .filter(
                 func.date_trunc("day", UserActivity.record_date)
                 >= func.date_trunc("day", self.start_at)
@@ -313,7 +326,7 @@ class BingoCard(db.Model):  # type: ignore
     )
 
     user: Mapped["User"] = relationship(back_populates="bingo_cards")
-    challenge: Mapped["Challenge"] = relationship(back_populates="bingo_card")
+    challenge: Mapped["Challenge"] = relationship(back_populates="bingo_cards")
     bingo_tiles: Mapped[list["BingoTile"]] = relationship(
         back_populates="bingo_card",
         order_by="(BingoTile.coordinate_y, BingoTile.coordinate_x)",
