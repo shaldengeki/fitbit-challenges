@@ -207,9 +207,7 @@ class User(db.Model):  # type: ignore
         self, start: datetime.datetime, end: datetime.datetime
     ) -> list["UserActivity"]:
         return (
-            UserActivity.query.filter(
-                UserActivity.fitbit_user_id == self.fitbit_user_id
-            )
+            UserActivity.query.filter(UserActivity.user == self.fitbit_user_id)
             .filter(UserActivity.created_at >= start)
             .filter(UserActivity.created_at < end)
             .all()
@@ -370,6 +368,10 @@ class BingoCard(db.Model):  # type: ignore
         self.user = user
         self.challenge = challenge
 
+        # Hard code the rows & cols.
+        self.rows = 5
+        self.columns = 5
+
         # Pick one of a set of victory patterns.
         pattern = random.choice(BingoCard.PATTERNS)
 
@@ -382,12 +384,13 @@ class BingoCard(db.Model):  # type: ignore
         total_active_minutes = 0
         total_distance_km: decimal.Decimal = decimal.Decimal(0)
 
-        for activity in user.activities_within_timespan(
-            start=window_start, end=window_end
-        ):
-            total_steps += activity.steps
-            total_active_minutes += activity.active_minutes
-            total_distance_km += activity.distance_km
+        with db.session.no_autoflush:
+            for activity in user.activities_within_timespan(
+                start=window_start, end=window_end
+            ):
+                total_steps += activity.steps
+                total_active_minutes += activity.active_minutes
+                total_distance_km += activity.distance_km
 
         total_steps = apply_fuzz_factor_to_int(total_steps, 20)
         total_active_minutes = apply_fuzz_factor_to_int(total_active_minutes, 20)
@@ -465,8 +468,6 @@ class BingoCard(db.Model):  # type: ignore
 
         # Persist everything.
         self.bingo_tiles = step_tiles + active_minutes_tiles + distance_km_tiles
-        db.session.add(self)
-        db.session.commit()
 
         return self
 
