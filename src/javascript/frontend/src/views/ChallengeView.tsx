@@ -70,7 +70,7 @@ const ChallengeView = () => {
                 sealed={challenge.sealed}
                 activities={activities}
             />;
-        } else {
+        } else if (challenge.challengeType === ChallengeType.WorkweekHustle) {
             innerContent = <WorkweekHustle
                 id={id}
                 users={challenge.users}
@@ -81,6 +81,10 @@ const ChallengeView = () => {
                 sealed={challenge.sealed}
                 activities={activities}
             />;
+        } else if (challenge.challengeType === ChallengeType.Bingo) {
+            innerContent = <p>Bingo challenge here!</p>;
+        } else {
+            return <p>Invalid challenge type!</p>
         }
     }
 
