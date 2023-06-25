@@ -75,6 +75,7 @@ def bingo_tile_fields() -> dict[str, GraphQLField]:
         "requiredForWin": GraphQLField(
             GraphQLNonNull(GraphQLBoolean),
             description="Whether the tile is required for a win.",
+            resolve=lambda bt, *args, **kwargs: bt.required_for_win,
         ),
         "createdAt": GraphQLField(
             GraphQLNonNull(GraphQLInt),
