@@ -37,6 +37,7 @@ export const FETCH_WORKWEEK_HUSTLE_QUERY = gql`
           currentUser {
             fitbitUserId
             displayName
+            createdAt
           }
       }
 `;
