@@ -3,6 +3,8 @@ import { MockedProvider } from '@apollo/react-testing';
 import BingoChallenge, { FETCH_BINGO_QUERY } from './BingoChallenge';
 import React from 'react';
 
+import { emptyUser } from '../types/User';
+
 function mockFetchBingoQuery(result: object) {
     return {
         request: {
@@ -24,7 +26,7 @@ it('should render a loading screen before data is loaded', async () => {
 
     render(
         <MockedProvider mocks={[mock]}>
-            <BingoChallenge id={1} />
+            <BingoChallenge id={1} currentUser={emptyUser} />
         </MockedProvider>,
     );
     expect(await screen.findByText("Loading...")).toBeInTheDocument();
@@ -41,7 +43,7 @@ it('should render an error when the query fails', async () => {
 
     render(
         <MockedProvider mocks={[mock]}>
-            <BingoChallenge id={1} />
+            <BingoChallenge id={1} currentUser={emptyUser} />
         </MockedProvider>,
     );
     expect(await screen.findByText("Error loading bingo challenge!")).toBeInTheDocument();
@@ -57,7 +59,7 @@ it('should render an error when no challenge exists', async () => {
 
     render(
         <MockedProvider mocks={[mock]}>
-            <BingoChallenge id={1} />
+            <BingoChallenge id={1} currentUser={emptyUser} />
         </MockedProvider>,
     );
     expect(await screen.findByText("Could not find a bingo challenge with that ID!")).toBeInTheDocument();
