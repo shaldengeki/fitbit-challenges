@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import PageContainer from '../components/PageContainer';
 import WorkweekHustle from '../components/WorkweekHustle';
 import WeekendWarrior from '../components/WeekendWarrior';
+import BingoChallenge from '../components/BingoChallenge';
 import Activity from '../types/Activity';
 import Challenge, {ChallengeType} from '../types/Challenge';
 
@@ -82,7 +83,7 @@ const ChallengeView = () => {
                 activities={activities}
             />;
         } else if (challenge.challengeType === ChallengeType.Bingo) {
-            innerContent = <p>Bingo challenge here!</p>;
+            innerContent = <BingoChallenge id={id} />;
         } else {
             return <p>Invalid challenge type!</p>
         }
