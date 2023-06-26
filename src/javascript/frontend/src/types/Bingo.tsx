@@ -1,6 +1,7 @@
 import User from './User'
 
 export type BingoTile = {
+    id: number
     steps: number
     activeMinutes: number
     distanceKm: number

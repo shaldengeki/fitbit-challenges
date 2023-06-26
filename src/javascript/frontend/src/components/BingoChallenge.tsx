@@ -27,6 +27,7 @@ export const FETCH_BINGO_QUERY = gql`
                 rows
                 columns
                 tiles {
+                    id
                     steps
                     activeMinutes
                     distanceKm
@@ -54,7 +55,7 @@ type IconProps = {
 const Icon = ({paths, strokeWidth, viewBox}: IconProps) => {
     strokeWidth = strokeWidth || 0.1;
     viewBox = viewBox || "0 0 16 16";
-    const pathElts = paths.map((path) => <path strokeLinecap="round" strokeLinejoin="round" d={path} />);
+    const pathElts = paths.map((path, idx) => <path key={idx} strokeLinecap="round" strokeLinejoin="round" d={path} />);
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +164,7 @@ type BingoChallengeCardProps = {
 const BingoChallengeCard = ({card, user, currentUser}: BingoChallengeCardProps) => {
     console.log(card);
 
-    const tiles = card.tiles.map((tile) => <BingoChallengeTile tile={tile} />);
+    const tiles = card.tiles.map((tile) => <BingoChallengeTile key={tile.id} tile={tile} />);
     return (
         <div className="grid grid-cols-5 grid-rows-5 gap-1 text-center">
             {tiles}
