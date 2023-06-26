@@ -1,4 +1,4 @@
-import User from './User'
+import User, {emptyUser} from './User'
 
 export type BingoTile = {
     id: number
@@ -16,6 +16,13 @@ type BingoCard = {
     rows: number
     columns: number
     tiles: Array<BingoTile>
+}
+
+export const emptyBingoCard: BingoCard = {
+    user: emptyUser,
+    rows: 0,
+    columns: 0,
+    tiles: []
 }
 
 export default BingoCard;

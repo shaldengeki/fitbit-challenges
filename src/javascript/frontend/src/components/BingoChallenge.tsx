@@ -162,8 +162,6 @@ type BingoChallengeCardProps = {
 }
 
 const BingoChallengeCard = ({card, user, currentUser}: BingoChallengeCardProps) => {
-    console.log(card);
-
     const tiles = card.tiles.map((tile) => <BingoChallengeTile key={tile.id} tile={tile} />);
     return (
         <div className="grid grid-cols-5 grid-rows-5 gap-1 text-center">
