@@ -256,9 +256,11 @@ def apply_fuzz_factor_to_int(
     amount: int, percentage: int, random_factor: Optional[int] = None
 ) -> int:
     if random_factor is None:
-        random_factor = random.randint(-1 * percentage, percentage)
+        random_factor = random.randint(-100 * percentage, 100 * percentage)
+    else:
+        random_factor *= 100
 
-    fuzz_factor = 1 + (float(random_factor) / 100)
+    fuzz_factor = 1 + (float(random_factor) / (100 * 100))
     return int(amount * fuzz_factor)
 
 
