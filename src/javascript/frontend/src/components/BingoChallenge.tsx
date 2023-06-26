@@ -46,26 +46,44 @@ export const FETCH_BINGO_QUERY = gql`
 `;
 
 type IconProps = {
-    path: string
+    paths: string[]
+    strokeWidth?: number
+    viewBox?: string
 }
 
-const Icon = ({path}: IconProps) => {
-    return (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-1/2 h-1/2 mx-auto">
-        <path strokeLinecap="round" strokeLinejoin="round" d={path} />
-    </svg>);
+const Icon = ({paths, strokeWidth, viewBox}: IconProps) => {
+    strokeWidth = strokeWidth || 0.1;
+    viewBox = viewBox || "0 0 16 16";
+    const pathElts = paths.map((path) => <path strokeLinecap="round" strokeLinejoin="round" d={path} />);
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox={viewBox}
+            strokeWidth={strokeWidth}
+            stroke="currentColor"
+            className="w-1/2 h-1/2 mx-auto"
+        >
+            {pathElts}
+        </svg>
+    );
 }
 
 // TODO: pick better icons for steps & distance
 const StepsIcon = () => {
-    return <Icon path="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.81V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z" />;
+    return <Icon paths={["M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"]} />;
 }
 
 const ActiveMinutesIcon = () => {
-    return <Icon path="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />;
+    return <Icon paths={["M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09zM4.157 8.5H7a.5.5 0 0 1 .478.647L6.11 13.59l5.732-6.09H9a.5.5 0 0 1-.478-.647L9.89 2.41 4.157 8.5z"]} />;
 }
 
 const DistanceKmIcon = () => {
-    return <Icon path="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />;
+    return <Icon
+        paths={[
+            "M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z",
+            "M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+        ]} />;
 }
 
 type BingoChallengeTileProps = {
