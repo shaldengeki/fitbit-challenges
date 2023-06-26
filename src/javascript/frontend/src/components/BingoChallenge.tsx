@@ -45,32 +45,51 @@ export const FETCH_BINGO_QUERY = gql`
       }
 `;
 
+type IconProps = {
+    path: string
+}
+
+const Icon = ({path}: IconProps) => {
+    return (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-1/2 h-1/2 mx-auto">
+        <path strokeLinecap="round" strokeLinejoin="round" d={path} />
+    </svg>);
+}
+
+// TODO: pick better icons for steps & distance
+const StepsIcon = () => {
+    return <Icon path="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.81V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z" />;
+}
+
+const ActiveMinutesIcon = () => {
+    return <Icon path="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />;
+}
+
+const DistanceKmIcon = () => {
+    return <Icon path="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />;
+}
+
 type BingoChallengeTileProps = {
     tile: BingoTile
 }
 
 const BingoChallengeTile = ({tile}: BingoChallengeTileProps) => {
-    let icon = "";
+    let icon = <p />;
     let text = "";
-    // TODO: pick better icons for steps & distance
     if (tile.steps !== null) {
-        icon = "M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.81V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z";
+        icon = <StepsIcon />
         text = `${tile.steps}`;
     } else if (tile.activeMinutes !== null) {
-        icon = "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z";
+        icon = <ActiveMinutesIcon />;
         text = `${tile.activeMinutes}`;
     } else if (tile.distanceKm !== null) {
-        icon = "M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z";
+        icon = <DistanceKmIcon />;
         text = `${tile.distanceKm}`;
     }
     const className = `flex items-center rounded-full aspect-square font-extrabold text-white text-xl bg-blue-400`
     return (
         <div className={className}>
             <span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-1/2 h-1/2 mx-auto">
-                    <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
-                    {icon}
-                </svg>
+                {icon}
                 <p>{text}</p>
             </span>
         </div>
@@ -85,11 +104,35 @@ type BingoChallengeUnusedAmountsProps = {
 
 const BingoChallengeUnusedAmounts = ({steps, activeMinutes, distanceKm}: BingoChallengeUnusedAmountsProps) => {
     return (
-        <ul>
-            <li>{steps} steps</li>
-            <li>{activeMinutes} active minutes</li>
-            <li>{distanceKm} km</li>
-        </ul>
+        <div className="grid grid-cols-3 content-center text-left py-4">
+            <div className="flex">
+                <div className="w-1/3 my-auto">
+                    <StepsIcon />
+                </div>
+                <div className="w-2/3">
+                    <div>{steps}</div>
+                    <p>Steps</p>
+                </div>
+            </div>
+            <div className="flex">
+                <div className="w-1/3 my-auto">
+                    <ActiveMinutesIcon />
+                </div>
+                <div className="w-2/3">
+                    <div>{activeMinutes}</div>
+                    <p>Active Minutes</p>
+                </div>
+            </div>
+            <div className="flex">
+                <div className="w-1/3 my-auto">
+                    <DistanceKmIcon />
+                </div>
+                <div className="w-2/3">
+                    <div>{distanceKm}</div>
+                    <p>Km</p>
+                </div>
+            </div>
+        </div>
     )
 }
 
