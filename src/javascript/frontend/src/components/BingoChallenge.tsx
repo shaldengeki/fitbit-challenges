@@ -171,9 +171,6 @@ const BingoChallengeTile = ({tile, challengeId, isCurrentUser}: BingoChallengeTi
         text = `${tile.distanceKm}`;
         backgroundColor = "bg-blue-400 dark:bg-violet-800"
     }
-    if (text === "0") {
-        console.log("Tile", tile);
-    }
     const className = `flex items-center rounded-full aspect-square font-extrabold text-white dark:text-slate-50 text-xl ${backgroundColor}`
     return (
         <div className={className} onClick={(e) => {
