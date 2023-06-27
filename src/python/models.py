@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import decimal
 import itertools
@@ -322,6 +323,13 @@ class HouseBingoCardPattern(BingoCardPattern):
         ]
 
 
+@dataclasses.dataclass
+class UnusedAmounts:
+    steps: Optional[int]
+    activeMinutes: Optional[int]
+    distanceKm: Optional[decimal.Decimal]
+
+
 class BingoCard(db.Model):  # type: ignore
     __tablename__ = "bingo_cards"
 
@@ -492,6 +500,31 @@ class BingoCard(db.Model):  # type: ignore
         self.bingo_tiles = step_tiles + active_minutes_tiles + distance_km_tiles
 
         return self
+
+    def unused_amounts(self) -> UnusedAmounts:
+        # Sum up the total user's resources.
+        total_steps = 0
+        total_active_minutes = 0
+        total_distance_km = decimal.Decimal(0)
+        for activity in self.challenge.activities_for_user(self.user):
+            total_steps += activity.steps
+            total_active_minutes += activity.active_minutes
+            total_distance_km += activity.distance_km
+
+        # Subtract out the user's used steps.
+        for tile in self.flipped_tiles():
+            if tile.steps is not None:
+                total_steps -= tile.steps
+            if tile.active_minutes is not None:
+                total_active_minutes -= tile.active_minutes
+            if tile.distance_km is not None:
+                total_distance_km -= tile.distance_km
+
+        return UnusedAmounts(
+            steps=total_steps,
+            activeMinutes=total_active_minutes,
+            distanceKm=total_distance_km,
+        )
 
 
 class BingoTile(db.Model):  # type: ignore
