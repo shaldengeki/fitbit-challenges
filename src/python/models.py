@@ -223,7 +223,7 @@ class User(db.Model):  # type: ignore
             UserActivity.query.filter(UserActivity.user == self.fitbit_user_id)
             .filter(UserActivity.created_at >= start)
             .filter(UserActivity.created_at < end)
-            .order_by(UserActivity.record_date, desc(UserActivity.created_at))
+            .order_by(UserActivity.record_date, UserActivity.created_at)
             .all()
         )
 
@@ -232,12 +232,13 @@ class User(db.Model):  # type: ignore
     ) -> Generator["UserActivity", None, None]:
         prev_activity = None
         for activity in self.activities_within_timespan(start, end):
-            if (
-                prev_activity is None
-                or activity.record_date != prev_activity.record_date
-            ):
+            if prev_activity is None:
                 prev_activity = activity
-                yield activity
+            elif activity.record_date > prev_activity.record_date:
+                yield prev_activity
+                prev_activity = activity
+
+        yield activity
 
 
 class UserActivity(db.Model):  # type: ignore
@@ -287,7 +288,7 @@ def apply_fuzz_factor_to_decimal(
         decimal.Decimal(random_factor) / decimal.Decimal(100)
     )
 
-    return amount * fuzz_factor
+    return amount * fuzz_factor or decimal.Decimal(1)
 
 
 class BingoCardPattern:
