@@ -146,22 +146,26 @@ const BingoChallengeTile = ({tile, challengeId}: BingoChallengeTileProps) => {
 
     let icon = <p />;
     let text = "";
+    let backgroundColor = "";
     if (tile.flipped) {
         icon = <FlippedIcon />
     } else if (tile.steps !== null) {
         icon = <StepsIcon />
         text = `${tile.steps}`;
+        backgroundColor = "bg-teal-500 dark:bg-teal-800"
     } else if (tile.activeMinutes !== null) {
         icon = <ActiveMinutesIcon />;
         text = `${tile.activeMinutes}`;
+        backgroundColor = "bg-pink-400 dark:bg-pink-900"
     } else if (tile.distanceKm !== null) {
         icon = <DistanceKmIcon />;
         text = `${tile.distanceKm}`;
+        backgroundColor = "bg-blue-400 dark:bg-violet-800"
     }
     if (text === "0") {
         console.log("Tile", tile);
     }
-    const className = `flex items-center rounded-full aspect-square font-extrabold text-white dark:text-slate-50 text-xl bg-blue-400 dark:bg-indigo-800`
+    const className = `flex items-center rounded-full aspect-square font-extrabold text-white dark:text-slate-50 text-xl ${backgroundColor}`
     return (
         <div className={className} onClick={(e) => {
             e.preventDefault();
