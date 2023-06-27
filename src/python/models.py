@@ -274,7 +274,7 @@ def apply_fuzz_factor_to_int(
         random_factor *= 100
 
     fuzz_factor = 1 + (float(random_factor) / (100 * 100))
-    return int(amount * fuzz_factor)
+    return int(amount * fuzz_factor) or 1
 
 
 def apply_fuzz_factor_to_decimal(
