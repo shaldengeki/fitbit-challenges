@@ -19,6 +19,7 @@ export const FETCH_BINGO_QUERY = gql`
               endAt
               ended
               bingoCards {
+                id
                 user {
                     fitbitUserId
                     displayName
@@ -270,14 +271,14 @@ const BingoChallengeLeaderboardTile = ({tile}: BingoChallengeLeaderboardTileProp
 type BingoChallengeLeaderboardCardProps = {
     card: BingoCard
     setUserHook: Function
+    isDisplayedCard: boolean
 }
 
-const BingoChallengeLeaderboardCard = ({card, setUserHook}: BingoChallengeLeaderboardCardProps) => {
+const BingoChallengeLeaderboardCard = ({card, setUserHook, isDisplayedCard}: BingoChallengeLeaderboardCardProps) => {
     const tiles = card.tiles.map((tile) => <BingoChallengeLeaderboardTile key={tile.id} tile={tile} />);
+    const baseClasses = (isDisplayedCard) ? "rounded border border-green-500" : "";
     return (
-        <div className="" onClick={(e) => {
-            setUserHook(card.user)
-        }}>
+        <div className={`${baseClasses} p-1`} onClick={(e) => {setUserHook(card.user)}}>
             <div className="grid grid-cols-5 grid-rows-5 gap-1 text-center">
                 {tiles}
             </div>
@@ -289,9 +290,10 @@ const BingoChallengeLeaderboardCard = ({card, setUserHook}: BingoChallengeLeader
 type BingoChallengeLeaderboardProps = {
     cards: BingoCard[]
     setUserHook: Function
+    displayedCard: BingoCard
 }
 
-const BingoChallengeLeaderboard = ({cards, setUserHook}: BingoChallengeLeaderboardProps) => {
+const BingoChallengeLeaderboard = ({cards, setUserHook, displayedCard}: BingoChallengeLeaderboardProps) => {
     const sortedCards = _.sortBy(
         cards,
         (card) => {
@@ -299,7 +301,7 @@ const BingoChallengeLeaderboard = ({cards, setUserHook}: BingoChallengeLeaderboa
             const latestFlippedVictoryTile = _.max(flippedVictoryTiles.map((tile) => tile.flippedAt));
             return [-1 * flippedVictoryTiles.length, latestFlippedVictoryTile];
         }).map((card: BingoCard) => {
-            return <BingoChallengeLeaderboardCard card={card} setUserHook={setUserHook} />
+            return <BingoChallengeLeaderboardCard card={card} setUserHook={setUserHook} isDisplayedCard={displayedCard.id === card.id} />
         })
 
     return (
@@ -354,7 +356,7 @@ const BingoChallenge = ({id, currentUser}: BingoChallengeProps) => {
                     />
                 </div>
                 <div className="col-span-1 px-4">
-                    <BingoChallengeLeaderboard cards={cards} setUserHook={setDisplayedUser} />
+                    <BingoChallengeLeaderboard cards={cards} setUserHook={setDisplayedUser} displayedCard={displayedCard} />
                 </div>
             </div>
         </div>
