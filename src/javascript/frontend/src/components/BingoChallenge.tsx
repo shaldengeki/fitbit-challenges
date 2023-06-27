@@ -119,9 +119,10 @@ const DistanceKmIcon = () => {
 type BingoChallengeTileProps = {
     tile: BingoTile
     challengeId: number
+    isCurrentUser: boolean
 }
 
-const BingoChallengeTile = ({tile, challengeId}: BingoChallengeTileProps) => {
+const BingoChallengeTile = ({tile, challengeId, isCurrentUser}: BingoChallengeTileProps) => {
     const [
         flipTile,
         {
@@ -177,6 +178,9 @@ const BingoChallengeTile = ({tile, challengeId}: BingoChallengeTileProps) => {
     return (
         <div className={className} onClick={(e) => {
             e.preventDefault();
+            if (!isCurrentUser) {
+                return;
+            }
             flipTile({
                 variables: {
                     id: tile.id
@@ -239,7 +243,7 @@ type BingoChallengeCardProps = {
 }
 
 const BingoChallengeCard = ({card, user, currentUser, challengeId}: BingoChallengeCardProps) => {
-    const tiles = card.tiles.map((tile) => <BingoChallengeTile key={tile.id} tile={tile} challengeId={challengeId} />);
+    const tiles = card.tiles.map((tile) => <BingoChallengeTile key={tile.id} tile={tile} challengeId={challengeId} isCurrentUser={currentUser === user} />);
     return (
         <div className="grid grid-cols-5 grid-rows-5 gap-1 text-center">
             {tiles}
@@ -268,12 +272,15 @@ const BingoChallengeLeaderboardTile = ({tile}: BingoChallengeLeaderboardTileProp
 
 type BingoChallengeLeaderboardCardProps = {
     card: BingoCard
+    setUserHook: Function
 }
 
-const BingoChallengeLeaderboardCard = ({card}: BingoChallengeLeaderboardCardProps) => {
+const BingoChallengeLeaderboardCard = ({card, setUserHook}: BingoChallengeLeaderboardCardProps) => {
     const tiles = card.tiles.map((tile) => <BingoChallengeLeaderboardTile key={tile.id} tile={tile} />);
     return (
-        <div className="">
+        <div className="" onClick={(e) => {
+            setUserHook(card.user)
+        }}>
             <div className="grid grid-cols-5 grid-rows-5 gap-1 text-center">
                 {tiles}
             </div>
@@ -284,9 +291,10 @@ const BingoChallengeLeaderboardCard = ({card}: BingoChallengeLeaderboardCardProp
 
 type BingoChallengeLeaderboardProps = {
     cards: BingoCard[]
+    setUserHook: Function
 }
 
-const BingoChallengeLeaderboard = ({cards}: BingoChallengeLeaderboardProps) => {
+const BingoChallengeLeaderboard = ({cards, setUserHook}: BingoChallengeLeaderboardProps) => {
     const sortedCards = _.sortBy(
         cards,
         (card) => {
@@ -294,7 +302,7 @@ const BingoChallengeLeaderboard = ({cards}: BingoChallengeLeaderboardProps) => {
             const latestFlippedVictoryTile = _.max(flippedVictoryTiles.map((tile) => tile.flippedAt));
             return [-1 * flippedVictoryTiles.length, latestFlippedVictoryTile];
         }).map((card: BingoCard) => {
-            return <BingoChallengeLeaderboardCard card={card} />
+            return <BingoChallengeLeaderboardCard card={card} setUserHook={setUserHook} />
         })
 
     return (
@@ -349,7 +357,7 @@ const BingoChallenge = ({id, currentUser}: BingoChallengeProps) => {
                     />
                 </div>
                 <div className="col-span-1 px-4">
-                    <BingoChallengeLeaderboard cards={cards} />
+                    <BingoChallengeLeaderboard cards={cards} setUserHook={setDisplayedUser} />
                 </div>
             </div>
         </div>
