@@ -76,7 +76,6 @@ class Challenge(db.Model):  # type: ignore
                 >= func.date_trunc("day", self.start_at)
             )
             .filter(UserActivity.record_date < self.end_at)
-            .filter(UserActivity.created_at < self.seal_at)
             .order_by(desc(UserActivity.created_at))
             .all()
         )
