@@ -274,17 +274,30 @@ type BingoChallengeLeaderboardCardProps = {
     card: BingoCard
     setUserHook: Function
     isDisplayedCard: boolean
+    place: number
 }
 
-const BingoChallengeLeaderboardCard = ({card, setUserHook, isDisplayedCard}: BingoChallengeLeaderboardCardProps) => {
+const BingoChallengeLeaderboardCard = ({card, setUserHook, isDisplayedCard, place}: BingoChallengeLeaderboardCardProps) => {
     const tiles = card.tiles.map((tile) => <BingoChallengeLeaderboardTile key={tile.id} tile={tile} />);
     const baseClasses = (isDisplayedCard) ? "rounded border border-green-500" : "";
+    let displayText = "";
+    if (card.finished) {
+        if (place === 1) {
+            displayText = "🥇";
+        } else if (place === 2) {
+            displayText = "🥈";
+        } else if (place === 3) {
+            displayText = "🥉";
+        }
+    }
+    displayText = `${displayText}${card.user.displayName}`
+
     return (
         <div className={`${baseClasses} p-1`} onClick={(e) => {setUserHook(card.user)}}>
             <div className="grid grid-cols-5 grid-rows-5 gap-1 text-center">
                 {tiles}
             </div>
-            <p className="text-center">{card.user.displayName}</p>
+            <p className="text-center">{displayText}</p>
         </div>
     )
 }
@@ -302,8 +315,8 @@ const BingoChallengeLeaderboard = ({cards, setUserHook, displayedCard}: BingoCha
             const flippedVictoryTiles = card.tiles.filter((tile) => tile.flipped && tile.requiredForWin);
             const latestFlippedVictoryTile = _.max(flippedVictoryTiles.map((tile) => tile.flippedAt));
             return [-1 * flippedVictoryTiles.length, latestFlippedVictoryTile];
-        }).map((card: BingoCard) => {
-            return <BingoChallengeLeaderboardCard key={card.id} card={card} setUserHook={setUserHook} isDisplayedCard={displayedCard.id === card.id} />
+        }).map((card: BingoCard, idx) => {
+            return <BingoChallengeLeaderboardCard key={card.id} card={card} setUserHook={setUserHook} isDisplayedCard={displayedCard.id === card.id} place={idx+1} />
         })
 
     return (
