@@ -198,7 +198,7 @@ def bingo_card_fields() -> dict[str, GraphQLField]:
         "finished": GraphQLField(
             GraphQLNonNull(GraphQLBoolean),
             description="Whether the bingo card is completed.",
-            resolve=lambda card, *args, **kwargs: card.finished,
+            resolve=lambda card, *args, **kwargs: card.finished(),
         ),
         "finishedAt": GraphQLField(
             GraphQLInt,

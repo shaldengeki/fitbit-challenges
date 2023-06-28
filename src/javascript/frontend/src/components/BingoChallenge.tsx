@@ -37,6 +37,8 @@ export const FETCH_BINGO_QUERY = gql`
                     flippedAt
                     requiredForWin
                 }
+                finished
+                finishedAt
               }
               unusedAmounts {
                 steps
