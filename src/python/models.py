@@ -366,6 +366,13 @@ class UnusedAmounts:
     distanceKm: Optional[decimal.Decimal]
 
 
+@dataclasses.dataclass
+class TotalAmounts:
+    steps: int
+    active_minutes: int
+    distance_km: decimal.Decimal
+
+
 class BingoCard(db.Model):  # type: ignore
     __tablename__ = "bingo_cards"
 
@@ -439,26 +446,13 @@ class BingoCard(db.Model):  # type: ignore
             )
         )
 
-    def create_for_user_and_challenge(
+    def compute_total_amounts_for_resource(
         self,
-        user: "User",
-        challenge: "Challenge",
+        user: User,
         start: datetime.datetime,
         end: datetime.datetime,
-        pattern: Optional[BingoCardPattern] = None,
-    ) -> "BingoCard":
-        # Assign this card to the user and challenge.
-        self.user = user
-        self.challenge = challenge
-
-        # Hard code the rows & cols.
-        self.rows = 5
-        self.columns = 5
-
-        if pattern is None:
-            # Pick one of a set of victory patterns.
-            pattern = random.choice(BingoCard.PATTERNS)
-
+        pattern: BingoCardPattern,
+    ) -> TotalAmounts:
         # Compute the total amounts for each resource.
         duration = end - start
         # Get the user's last activity.
@@ -480,6 +474,36 @@ class BingoCard(db.Model):  # type: ignore
                 total_steps += activity.steps
                 total_active_minutes += activity.active_minutes
                 total_distance_km += activity.distance_km
+
+        return TotalAmounts(
+            steps=total_steps,
+            active_minutes=total_active_minutes,
+            distance_km=total_distance_km,
+        )
+
+    def create_for_user_and_challenge(
+        self,
+        user: User,
+        challenge: "Challenge",
+        start: datetime.datetime,
+        end: datetime.datetime,
+        pattern: Optional[BingoCardPattern] = None,
+    ) -> "BingoCard":
+        # Assign this card to the user and challenge.
+        self.user = user
+        self.challenge = challenge
+
+        # Hard code the rows & cols.
+        self.rows = 5
+        self.columns = 5
+
+        if pattern is None:
+            # Pick one of a set of victory patterns.
+            pattern = random.choice(BingoCard.PATTERNS)
+
+        total_amounts = self.compute_total_amounts_for_resource(
+            user, start, end, pattern
+        )
 
         # Create 25=5x5 tiles.
         step_tiles = [BingoTile(bingo_card=self) for _ in range(random.randint(7, 9))]
@@ -503,7 +527,7 @@ class BingoCard(db.Model):  # type: ignore
         for step_tile in step_tiles:
             # Assign ~1/8 or ~1/9 of the total resource amount
             step_tile.steps = apply_fuzz_factor_to_int(
-                int(total_steps / len(step_tiles)), 20
+                int(total_amounts.steps / len(step_tiles)), 20
             )
 
             # Assign a coordinate
@@ -518,7 +542,7 @@ class BingoCard(db.Model):  # type: ignore
         for active_minutes_tile in active_minutes_tiles:
             # Assign ~1/8 or ~1/9 of the total resource amount
             active_minutes_tile.active_minutes = apply_fuzz_factor_to_int(
-                int(total_active_minutes / len(active_minutes_tiles)), 20
+                int(total_amounts.active_minutes / len(active_minutes_tiles)), 20
             )
 
             # Assign a coordinate
@@ -536,7 +560,7 @@ class BingoCard(db.Model):  # type: ignore
         for distance_km_tile in distance_km_tiles:
             # Assign ~1/8 or ~1/9 of the total resource amount
             distance_km_tile.distance_km = apply_fuzz_factor_to_decimal(
-                total_distance_km / len(distance_km_tiles), 20
+                total_amounts.distance_km / len(distance_km_tiles), 20
             )
 
             # Assign a coordinate
