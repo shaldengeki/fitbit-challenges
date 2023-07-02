@@ -477,6 +477,15 @@ class BingoCard(db.Model):  # type: ignore
             total_active_minutes += activity.active_minutes
             total_distance_km += activity.distance_km
 
+        victory_tile_proportion = decimal.Decimal(
+            pattern.number_of_required_tiles
+        ) / decimal.Decimal(pattern.number_of_tiles)
+        total_steps = int(total_steps / victory_tile_proportion)
+        total_active_minutes = int(total_active_minutes / victory_tile_proportion)
+        total_distance_km = decimal.Decimal(
+            round(total_distance_km / victory_tile_proportion, 2)
+        )
+
         return TotalAmounts(
             steps=total_steps,
             active_minutes=total_active_minutes,

@@ -355,4 +355,4 @@ class TestBingoCard:
         assert 64 == totals.active_minutes
 
         # 1.8 / (5/9)
-        assert decimal.Decimal(3.24) == totals.distance_km
+        assert decimal.Decimal("3.24") == totals.distance_km
