@@ -345,15 +345,14 @@ class TestBingoCard:
 
         card = BingoCard()
         start = now - datetime.timedelta(hours=2)
-        pattern = BingoCard.PATTERNS[0]
+        pattern = SampleBingoCardPattern()
         totals = card.compute_total_amounts_for_resource(u, start, now, pattern)
 
-        victory_tile_proportion = (
-            float(pattern.number_of_required_tiles) / pattern.number_of_tiles
-        )
-        assert int(42 / victory_tile_proportion) == totals.steps
-        assert int(36 / victory_tile_proportion) == totals.active_minutes
-        assert (
-            decimal.Decimal(1.8) / decimal.Decimal(victory_tile_proportion)
-            == totals.distance_km
-        )
+        # 42 / (5/9)
+        assert 75 == totals.steps
+
+        # 36 / (5/9)
+        assert 64 == totals.active_minutes
+
+        # 1.8 / (5/9)
+        assert decimal.Decimal(3.24) == totals.distance_km
