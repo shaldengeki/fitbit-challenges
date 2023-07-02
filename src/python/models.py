@@ -251,7 +251,6 @@ class User(db.Model):  # type: ignore
         if activity is not None:
             yield activity
 
-    @property
     def last_activity(self) -> Optional["UserActivity"]:
         return (
             UserActivity.query.filter(UserActivity.user == self.fitbit_user_id)
@@ -321,6 +320,10 @@ class BingoCardPattern:
     @property
     def number_of_required_tiles(self) -> int:
         return sum(val for row in self.pattern for val in row)
+
+    @property
+    def number_of_tiles(self) -> int:
+        return sum(len(row) for row in self.pattern)
 
 
 class TenBingoCardPattern(BingoCardPattern):
@@ -456,7 +459,7 @@ class BingoCard(db.Model):  # type: ignore
         # Compute the total amounts for each resource.
         duration = end - start
         # Get the user's last activity.
-        last_activity = user.last_activity
+        last_activity = user.last_activity()
         if last_activity is None:
             window_end = datetime.datetime.now(tz=datetime.timezone.utc)
         else:
@@ -467,13 +470,12 @@ class BingoCard(db.Model):  # type: ignore
         total_active_minutes = 0
         total_distance_km: decimal.Decimal = decimal.Decimal(0)
 
-        with db.session.no_autoflush:
-            for activity in user.latest_activity_for_days_within_timespan(
-                start=window_start, end=window_end
-            ):
-                total_steps += activity.steps
-                total_active_minutes += activity.active_minutes
-                total_distance_km += activity.distance_km
+        for activity in user.latest_activity_for_days_within_timespan(
+            start=window_start, end=window_end
+        ):
+            total_steps += activity.steps
+            total_active_minutes += activity.active_minutes
+            total_distance_km += activity.distance_km
 
         return TotalAmounts(
             steps=total_steps,
@@ -501,9 +503,10 @@ class BingoCard(db.Model):  # type: ignore
             # Pick one of a set of victory patterns.
             pattern = random.choice(BingoCard.PATTERNS)
 
-        total_amounts = self.compute_total_amounts_for_resource(
-            user, start, end, pattern
-        )
+        with db.session.no_autoflush:
+            total_amounts = self.compute_total_amounts_for_resource(
+                user, start, end, pattern
+            )
 
         # Create 25=5x5 tiles.
         step_tiles = [BingoTile(bingo_card=self) for _ in range(random.randint(7, 9))]
