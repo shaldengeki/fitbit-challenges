@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.execute(
         """
-            insert into challenge_memberships (fitbit_user_id, challenge_id, created_at)
+            insert into challenge_memberships (challenge_id, fitbit_user_id, created_at)
             select id, unnest(string_to_array(challenges.users, ',')), created_at from challenges
         """
     )
