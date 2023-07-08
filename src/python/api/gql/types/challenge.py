@@ -132,7 +132,7 @@ def create_challenge(
     for fitbit_user_id in args["users"]:
         user = user_model.query.filter(
             user_model.fitbit_user_id == fitbit_user_id
-        ).first
+        ).first()
         if user is None:
             not_found_user_ids.append(fitbit_user_id)
             continue
