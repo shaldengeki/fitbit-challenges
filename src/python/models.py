@@ -279,6 +279,10 @@ class ChallengeMembership(db.Model):  # type: ignore
     challenge_id: Mapped[int] = mapped_column(
         ForeignKey("challenges.id"), primary_key=True
     )
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        db.TIMESTAMP(timezone=True),
+        default=lambda: datetime.datetime.now(tz=datetime.timezone.utc),
+    )
 
     user: Mapped["User"] = relationship(back_populates="challenge_memberships")
     challenge: Mapped["Challenge"] = relationship(back_populates="user_memberships")
