@@ -32,7 +32,7 @@ class Challenge(db.Model):  # type: ignore
     bingo_cards: Mapped[list["BingoCard"]] = relationship(back_populates="challenge")
 
     users: Mapped[list["User"]] = relationship(
-        secondary="challenge_memberships", back_populates="challenges"
+        secondary="challenge_memberships", back_populates="challenges", viewonly=True
     )
 
     user_memberships: Mapped[list["ChallengeMembership"]] = relationship(
@@ -158,7 +158,7 @@ class User(db.Model):  # type: ignore
     bingo_cards: Mapped[list["BingoCard"]] = relationship(back_populates="user")
 
     challenges: Mapped[list["Challenge"]] = relationship(
-        secondary="challenge_memberships", back_populates="users"
+        secondary="challenge_memberships", back_populates="users", viewonly=True
     )
     challenge_memberships: Mapped[list["ChallengeMembership"]] = relationship(
         back_populates="user"
