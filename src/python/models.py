@@ -60,7 +60,7 @@ class Challenge(db.Model):  # type: ignore
 
     @property
     def users_list(self) -> list["User"]:
-        user_ids = self.old_users.split(",")
+        user_ids = [user.fitbit_user_id for user in self.users]
         return (
             User.query.filter(User.fitbit_user_id.in_(user_ids))
             .order_by(User.display_name)
@@ -69,7 +69,11 @@ class Challenge(db.Model):  # type: ignore
 
     def activities(self) -> list["UserActivity"]:
         return (
-            UserActivity.query.filter(UserActivity.user.in_(self.old_users.split(",")))
+            UserActivity.query.filter(
+                UserActivity.user.in_(
+                    membership.fitbit_user_id for membership in self.user_memberships
+                )
+            )
             .filter(
                 func.date_trunc("day", UserActivity.record_date)
                 >= func.date_trunc("day", self.start_at)
