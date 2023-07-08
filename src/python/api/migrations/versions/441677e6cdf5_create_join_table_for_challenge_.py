@@ -20,7 +20,7 @@ depends_on = None
 def upgrade():
     op.create_table(
         "challenge_memberships",
-        sa.Column("fitbit_user_id", sa.Unicode(100), primary_key=True),
+        sa.Column("fitbit_user_id", sa.Unicode(100)),
         sa.Column("challenge_id", sa.Unicode(100), nullable=True),
         sa.Column(
             "created_at", sa.DateTime(timezone=True), default=now, nullable=False
