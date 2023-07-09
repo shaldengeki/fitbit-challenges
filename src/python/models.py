@@ -247,13 +247,12 @@ class User(db.Model):  # type: ignore
     def activities_within_timespan(
         self, start: datetime.datetime, end: datetime.datetime
     ) -> list["UserActivity"]:
-        return (
-            UserActivity.query.filter(UserActivity.user == self.fitbit_user_id)
-            .filter(UserActivity.created_at >= start)
-            .filter(UserActivity.created_at < end)
-            .order_by(UserActivity.record_date, UserActivity.created_at)
-            .all()
-        )
+        filtered_activities = [
+            activity
+            for activity in self.activities
+            if activity.created_at >= start and activity.created_at < end
+        ]
+        return sorted(filtered_activities, key=lambda a: [a.record_date, a.created_at])
 
     def latest_activity_for_days_within_timespan(
         self, start: datetime.datetime, end: datetime.datetime
@@ -261,11 +260,12 @@ class User(db.Model):  # type: ignore
         prev_activity = None
         activity = None
         for activity in self.activities_within_timespan(start, end):
-            if prev_activity is None:
-                prev_activity = activity
-            elif activity.record_date > prev_activity.record_date:
+            if (
+                prev_activity is not None
+                and activity.record_date > prev_activity.record_date
+            ):
                 yield prev_activity
-                prev_activity = activity
+            prev_activity = activity
 
         if activity is not None:
             yield activity
@@ -317,7 +317,7 @@ class UserActivity(db.Model):  # type: ignore
     fitbit_user: Mapped["User"] = relationship(back_populates="activities")
 
     def __repr__(self) -> str:
-        return "<UserActivity {id}>".format(id=self.id)
+        return f"<UserActivity {self.id} created_at={self.created_at} record_date={self.record_date}>"
 
 
 def apply_fuzz_factor_to_int(
