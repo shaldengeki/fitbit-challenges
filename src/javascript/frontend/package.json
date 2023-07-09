@@ -57,5 +57,10 @@
     "@types/lodash": "^4.14.195",
     "tailwindcss": "^3.3.2",
     "react-canvas-confetti": "^1.4.0"
+  },
+  "overrides": {
+    "react-scripts": {
+      "typescript": ">3.2.1"
+    }
   }
 }
