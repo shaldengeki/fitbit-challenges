@@ -26,8 +26,8 @@ const NavBar = (props: NavBarProps) => {
 
     return (
         <div className="leading-6 w-full sticky border-b border-b-slate-50 py-4 px-4 bg-blue-200 dark:bg-slate-900 dark:text-slate-400">
-            <div className="relative flex items-center gap-4">
-                <img className="flex-none h-12 inline" src={logo192} alt="Fitbit app icon" />
+            <div className="relative flex items-center gap-2">
+                <img className="flex-none h-6 inline" src={logo192} alt="Fitbit app icon" />
                 <div className="dark:hover:text-slate-300 hover:text-slate-500">
                     <Link to={'/challenges'}>
                         <p className="font-bold">Challenges</p>
