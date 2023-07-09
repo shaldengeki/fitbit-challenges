@@ -41,7 +41,7 @@ const NavBar = (props: NavBarProps) => {
                 }
                 {
                     data && data.currentUser === null &&
-                    <Link to={'/auth'} className="ml-auto">
+                    <Link to={'/auth'} className="ml-auto dark:hover:text-slate-300 hover:text-slate-500">
                         <img className="h-5 inline" src={fitbit} alt="Fitbit app icon" />
                         <span className="font-bold">Sign in with Fitbit</span>
                     </Link>
