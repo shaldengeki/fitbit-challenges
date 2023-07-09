@@ -271,11 +271,10 @@ class User(db.Model):  # type: ignore
             yield activity
 
     def last_activity(self) -> Optional["UserActivity"]:
-        return (
-            UserActivity.query.filter(UserActivity.user == self.fitbit_user_id)
-            .order_by(desc(UserActivity.created_at))
-            .first()
-        )
+        if not self.activities:
+            return None
+
+        return max(self.activities, key=lambda a: a.created_at)
 
 
 class ChallengeMembership(db.Model):  # type: ignore
