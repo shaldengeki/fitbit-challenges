@@ -24,10 +24,6 @@ from .user import user_type, fetch_current_user
 def winners_resolver(challenge: Challenge) -> list[User]:
     rankings: list[User]
     now = datetime.datetime.now(tz=datetime.timezone.utc)
-    import logging
-
-    logging.error(f"Challenge ID: {challenge.id}")
-
     if challenge.challenge_type in (
         ChallengeType.WEEKEND_WARRIOR.value,
         ChallengeType.WORKWEEK_HUSTLE.value,
@@ -43,9 +39,7 @@ def winners_resolver(challenge: Challenge) -> list[User]:
             key=lambda x: x[1],
             reverse=True,
         )
-        logging.error(f"Progress: {challenge_progress}")
         rankings = [x[0] for x in challenge_progress][0:3]
-        logging.error(f"Rankings: {rankings}")
     elif challenge.challenge_type == ChallengeType.BINGO.value:
         bingo_progress: list[tuple[User, tuple[int, Optional[datetime.timedelta]]]] = []
         for user in challenge.users:
@@ -175,8 +169,6 @@ def fetch_challenges(challenge_model: Type[Challenge], params: dict[str, Any]):
     query_obj = challenge_model.query
     if params.get("id", False):
         query_obj = query_obj.filter(challenge_model.id == params["id"])
-    import logging
-
     return query_obj.order_by(desc(challenge_model.start_at)).all()
 
 

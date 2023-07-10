@@ -106,7 +106,14 @@ class Challenge(db.Model):  # type: ignore
     def latest_activities_per_day_for_user(
         self, user: "User"
     ) -> Generator["UserActivity", None, None]:
-        return user.latest_activity_for_days_within_timespan(self.start_at, self.end_at)
+        for activity in user.latest_activity_for_days_within_timespan(
+            self.start_at, self.seal_at
+        ):
+            if activity.record_date > self.end_at.date():
+                continue
+            if activity.record_date < self.start_at.date():
+                continue
+            yield activity
 
     def total_amounts(self) -> dict["User", "TotalAmounts"]:
         total_amounts = {}

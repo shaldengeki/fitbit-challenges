@@ -95,7 +95,10 @@ class TestChallenge:
 
     def test_total_amounts_with_one_user_returns_total_amount(self):
         u1 = User(activities=[])
-        c = Challenge(users=[u1])
+        c = Challenge(
+            users=[u1],
+            end_at=datetime.datetime.now(tz=datetime.timezone.utc),
+        )
         assert {
             u1: TotalAmounts(
                 steps=0, active_minutes=0, distance_km=decimal.Decimal(0.0)
@@ -207,7 +210,10 @@ class TestChallenge:
     def test_total_amounts_with_two_users_returns_total_amounts(self):
         u1 = User(activities=[])
         u2 = User(activities=[])
-        c = Challenge(users=[u1, u2])
+        c = Challenge(
+            users=[u1, u2],
+            end_at=datetime.datetime.now(tz=datetime.timezone.utc),
+        )
         assert {
             u1: TotalAmounts(
                 steps=0, active_minutes=0, distance_km=decimal.Decimal(0.0)
