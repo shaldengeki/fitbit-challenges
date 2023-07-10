@@ -1,5 +1,6 @@
 import datetime
 from enum import Enum
+from flask import Flask
 from graphql import (
     GraphQLArgument,
     GraphQLBoolean,
@@ -14,10 +15,10 @@ import random
 from sqlalchemy import desc
 from typing import Any, Optional, Type
 
-from ....config import db
+from ....config import app, db
 from ....models import Challenge, ChallengeMembership, BingoCard, User
 from .user_activities import user_activity_type
-from .user import user_type
+from .user import user_type, fetch_current_user
 
 
 def winners_resolver(challenge: Challenge) -> list[User]:
@@ -63,6 +64,22 @@ def winners_resolver(challenge: Challenge) -> list[User]:
             f"Invalid challenge type {challenge.challenge_type} for challenge #{challenge.id}!"
         )
     return rankings
+
+
+def current_user_placement_resolver(challenge: Challenge, app: Flask) -> Optional[int]:
+    current_user = fetch_current_user(app, User)
+    if current_user is None:
+        return None
+
+    if current_user not in challenge.users:
+        return None
+
+    winners = winners_resolver(challenge)
+    for idx, winner in enumerate(winners):
+        if winner.fitbit_user_id == current_user.fitbit_user_id:
+            return idx + 1
+
+    raise ValueError(f"Could not find user in challenge!")
 
 
 def challenge_fields() -> dict[str, GraphQLField]:
@@ -127,6 +144,13 @@ def challenge_fields() -> dict[str, GraphQLField]:
             GraphQLList(user_type),
             description="A list of the winners for this challenge, in ranked order.",
             resolve=lambda challenge, *args, **kwargs: winners_resolver(challenge),
+        ),
+        "currentUserPlacement": GraphQLField(
+            GraphQLInt,
+            description="An integer representing the current user's win ranking.",
+            resolve=lambda challenge, *args, **kwargs: current_user_placement_resolver(
+                challenge, app
+            ),
         ),
     }
 
