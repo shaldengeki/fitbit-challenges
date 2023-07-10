@@ -12,12 +12,57 @@ from graphql import (
 )
 import random
 from sqlalchemy import desc
-from typing import Any, Type
+from typing import Any, Optional, Type
 
 from ....config import db
 from ....models import Challenge, ChallengeMembership, BingoCard, User
 from .user_activities import user_activity_type
 from .user import user_type
+
+
+def winners_resolver(challenge: Challenge) -> list[User]:
+    rankings: list[User]
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    if challenge.challenge_type in (
+        ChallengeType.WEEKEND_WARRIOR,
+        ChallengeType.WORKWEEK_HUSTLE,
+    ):
+        if not challenge.ended:
+            return []
+
+        challenge_progress = sorted(
+            ((user, totals.steps) for user, totals in challenge.total_amounts()),
+            key=lambda x: x[1],
+            reverse=True,
+        )
+        rankings = [x[0] for x in challenge_progress]
+    elif challenge.challenge_type == ChallengeType.BINGO:
+        bingo_progress: list[tuple[User, tuple[int, Optional[datetime.timedelta]]]] = []
+        for user in challenge.users:
+            card = next(
+                card for card in user.bingo_cards if card.challenge_id == challenge.id
+            )
+            finished_at = card.finished_at()
+            if finished_at is None:
+                continue
+
+            bingo_progress.append(
+                (
+                    user,
+                    (len(list(card.flipped_victory_tiles())), now - finished_at),
+                )
+            )
+        if not bingo_progress:
+            return []
+
+        rankings = [
+            x[0] for x in sorted(bingo_progress, key=lambda x: x[1], reverse=True)
+        ]
+    else:
+        raise ValueError(
+            f"Invalid challenge type {challenge.challenge_type} for challenge #{challenge.id}!"
+        )
+    return rankings
 
 
 def challenge_fields() -> dict[str, GraphQLField]:
@@ -77,6 +122,11 @@ def challenge_fields() -> dict[str, GraphQLField]:
             GraphQLNonNull(GraphQLList(user_activity_type)),
             description="The activities recorded as part of this challenge.",
             resolve=lambda challenge, *args, **kwargs: challenge.activities(),
+        ),
+        "winners": GraphQLField(
+            GraphQLList(user_type),
+            description="A list of the winners for this challenge, in ranked order.",
+            resolve=lambda challenge, *args, **kwargs: winners_resolver(challenge),
         ),
     }
 

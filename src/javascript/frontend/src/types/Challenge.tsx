@@ -19,6 +19,7 @@ type Challenge = {
     sealAt: number
     sealed: boolean
     activities: Activity[]
+    winners: User[]
 }
 
 export const emptyChallenge: Challenge = {
@@ -33,6 +34,7 @@ export const emptyChallenge: Challenge = {
     sealAt: 0,
     sealed: false,
     activities: [],
+    winners: [],
 }
 
 export default Challenge;
