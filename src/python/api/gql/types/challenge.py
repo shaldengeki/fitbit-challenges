@@ -24,20 +24,29 @@ from .user import user_type, fetch_current_user
 def winners_resolver(challenge: Challenge) -> list[User]:
     rankings: list[User]
     now = datetime.datetime.now(tz=datetime.timezone.utc)
+    import logging
+
+    logging.error(f"Challenge ID: {challenge.id}")
+
     if challenge.challenge_type in (
-        ChallengeType.WEEKEND_WARRIOR,
-        ChallengeType.WORKWEEK_HUSTLE,
+        ChallengeType.WEEKEND_WARRIOR.value,
+        ChallengeType.WORKWEEK_HUSTLE.value,
     ):
         if not challenge.ended:
             return []
 
         challenge_progress = sorted(
-            ((user, totals.steps) for user, totals in challenge.total_amounts()),
+            (
+                (user, totals.steps)
+                for user, totals in challenge.total_amounts().items()
+            ),
             key=lambda x: x[1],
             reverse=True,
         )
-        rankings = [x[0] for x in challenge_progress]
-    elif challenge.challenge_type == ChallengeType.BINGO:
+        logging.error(f"Progress: {challenge_progress}")
+        rankings = [x[0] for x in challenge_progress][0:3]
+        logging.error(f"Rankings: {rankings}")
+    elif challenge.challenge_type == ChallengeType.BINGO.value:
         bingo_progress: list[tuple[User, tuple[int, Optional[datetime.timedelta]]]] = []
         for user in challenge.users:
             card = next(
@@ -58,7 +67,7 @@ def winners_resolver(challenge: Challenge) -> list[User]:
 
         rankings = [
             x[0] for x in sorted(bingo_progress, key=lambda x: x[1], reverse=True)
-        ]
+        ][0:3]
     else:
         raise ValueError(
             f"Invalid challenge type {challenge.challenge_type} for challenge #{challenge.id}!"
@@ -79,7 +88,7 @@ def current_user_placement_resolver(challenge: Challenge, app: Flask) -> Optiona
         if winner.fitbit_user_id == current_user.fitbit_user_id:
             return idx + 1
 
-    raise ValueError(f"Could not find user in challenge!")
+    return None
 
 
 def challenge_fields() -> dict[str, GraphQLField]:
@@ -166,6 +175,8 @@ def fetch_challenges(challenge_model: Type[Challenge], params: dict[str, Any]):
     query_obj = challenge_model.query
     if params.get("id", False):
         query_obj = query_obj.filter(challenge_model.id == params["id"])
+    import logging
+
     return query_obj.order_by(desc(challenge_model.start_at)).all()
 
 
