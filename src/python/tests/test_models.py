@@ -7,6 +7,7 @@ from ..models import (
     BingoCard,
     BingoCardPattern,
     BingoTile,
+    BingoTileBonusType,
     Challenge,
     TotalAmounts,
     User,
@@ -532,6 +533,83 @@ class TestBingoCard:
 
         # 1.8 / (5/9)
         assert decimal.Decimal("3.24") == totals.distance_km
+
+    def test_create_for_user_and_challenge_creates_bonus_tiles(self):
+        # 5x5 card, 25 tiles
+        card = BingoCard()
+        start = datetime.datetime(2022, 1, 1)
+        end = datetime.datetime(2022, 1, 4)
+
+        user = User(
+            activities=[
+                UserActivity(
+                    created_at=datetime.datetime(2021, 12, 31),
+                    record_date=datetime.date(2021, 12, 31),
+                    steps=100,
+                    active_minutes=42,
+                    distance_km=decimal.Decimal("3.6"),
+                ),
+                UserActivity(
+                    created_at=datetime.datetime(2021, 12, 30),
+                    record_date=datetime.date(2021, 12, 30),
+                    steps=100,
+                    active_minutes=42,
+                    distance_km=decimal.Decimal("3.6"),
+                ),
+            ]
+        )
+        challenge = Challenge()
+
+        # 17 victory tiles
+        pattern = BingoCard.PATTERNS[0]
+        card.create_for_user_and_challenge(user, challenge, start, end, pattern)
+
+        # 25 - 17 = 8 potential bonus tiles,
+        # we fill half (4) of them.
+        assert 4 == len([t for t in card.bingo_tiles if t.bonus_type is not None])
+
+        # No victory tiles have bonuses.
+        assert not any(t.bonus_type is not None for t in card.victory_tiles())
+
+        # No bonus tiles give bonuses of the same type.
+        assert not any(
+            t.steps is not None
+            and t.bonus_type == BingoTileBonusType.STEPS
+            or t.active_minutes is not None
+            and t.bonus_type == BingoTileBonusType.ACTIVE_MINUTES
+            or t.distance_km is not None
+            and t.bonus_type == BingoTileBonusType.DISTANCE_KM
+            for t in card.bingo_tiles
+        )
+
+        # Total steps bonuses are within 20% of 1/10 the total activity.
+        assert (
+            20
+            >= sum(
+                t.bonus_amount
+                for t in card.bingo_tiles
+                if t.bonus_type == BingoTileBonusType.STEPS
+            )
+            >= 0
+        )
+        assert (
+            8
+            >= sum(
+                t.bonus_amount
+                for t in card.bingo_tiles
+                if t.bonus_type == BingoTileBonusType.ACTIVE_MINUTES
+            )
+            >= 0
+        )
+        assert (
+            decimal.Decimal("0.72")
+            >= sum(
+                t.bonus_amount
+                for t in card.bingo_tiles
+                if t.bonus_type == BingoTileBonusType.DISTANCE_KM
+            )
+            >= 0
+        )
 
 
 class TestUser:

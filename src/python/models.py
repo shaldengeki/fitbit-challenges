@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import decimal
+import enum
 import itertools
 import random
 import requests
@@ -22,6 +23,13 @@ class TotalAmounts:
     steps: int
     active_minutes: int
     distance_km: decimal.Decimal
+
+    def copy(self) -> "TotalAmounts":
+        return TotalAmounts(
+            steps=self.steps,
+            active_minutes=self.active_minutes,
+            distance_km=self.distance_km,
+        )
 
 
 class Challenge(db.Model):  # type: ignore
@@ -379,6 +387,13 @@ class UnusedAmounts:
     distanceKm: Optional[decimal.Decimal]
 
 
+class BingoTileBonusType(enum.Enum):
+    STEPS = 0
+    ACTIVE_MINUTES = 1
+    DISTANCE_KM = 2
+    HALVE = 3
+
+
 class BingoCard(db.Model):  # type: ignore
     __tablename__ = "bingo_cards"
 
@@ -421,6 +436,11 @@ class BingoCard(db.Model):  # type: ignore
             if tile.required_for_win:
                 yield tile
 
+    def non_victory_tiles(self) -> Generator["BingoTile", None, None]:
+        for tile in self.bingo_tiles:
+            if not tile.required_for_win:
+                yield tile
+
     def flipped_victory_tiles(self) -> Generator["BingoTile", None, None]:
         for tile in self.victory_tiles():
             if tile.flipped:
@@ -449,6 +469,71 @@ class BingoCard(db.Model):  # type: ignore
                 if tile.distance_km is not None
             )
         )
+
+    def assign_bonus_tiles(self, totals: TotalAmounts) -> None:
+        non_victory_tiles = []
+        step_tiles = 0
+        minutes_tiles = 0
+        distance_tiles = 0
+        for tile in self.non_victory_tiles():
+            non_victory_tiles.append(tile)
+            if tile.steps is not None:
+                step_tiles += 1
+            elif tile.active_minutes is not None:
+                minutes_tiles += 1
+            elif tile.distance_km is not None:
+                distance_tiles += 1
+
+        non_victory_tiles = list(self.non_victory_tiles())
+        random.shuffle(non_victory_tiles)
+
+        totals = totals.copy()
+        average_per_tile = TotalAmounts(
+            steps=totals.steps / (step_tiles or 1),
+            active_minutes=totals.active_minutes / (minutes_tiles or 1),
+            distance_km=totals.distance_km / (distance_tiles or 1),
+        )
+
+        for idx, tile in enumerate(non_victory_tiles):
+            if idx % 2 != 0:
+                # only make half the tiles bonus tiles.
+                continue
+
+            # Pick a resource other than the one this tile cost to assign a bonus for.
+            if tile.steps is not None:
+                bonus_type = random.choice(
+                    [BingoTileBonusType.ACTIVE_MINUTES, BingoTileBonusType.DISTANCE_KM]
+                )
+            elif tile.active_minutes is not None:
+                bonus_type = random.choice(
+                    [BingoTileBonusType.STEPS, BingoTileBonusType.DISTANCE_KM]
+                )
+            elif tile.distance_km is not None:
+                bonus_type = random.choice(
+                    [BingoTileBonusType.STEPS, BingoTileBonusType.ACTIVE_MINUTES]
+                )
+
+            tile.bonus_type = bonus_type
+
+            if bonus_type == BingoTileBonusType.STEPS:
+                amount = apply_fuzz_factor_to_int(average_per_tile.steps, 20)
+                if amount > totals.steps:
+                    amount = totals.steps
+                totals.steps -= amount
+            elif bonus_type == BingoTileBonusType.ACTIVE_MINUTES:
+                amount = apply_fuzz_factor_to_int(average_per_tile.active_minutes, 20)
+                if amount > totals.active_minutes:
+                    amount = totals.active_minutes
+                totals.active_minutes -= amount
+            elif bonus_type == BingoTileBonusType.DISTANCE_KM:
+                amount = apply_fuzz_factor_to_decimal(average_per_tile.distance_km, 20)
+                if amount > totals.distance_km:
+                    amount = totals.distance_km
+                totals.distance_km -= amount
+            else:
+                raise ValueError(f"Unknown bonus type: {bonus_type}")
+
+            tile.bonus_amount = amount
 
     def compute_total_amounts_for_resource(
         self,
@@ -513,10 +598,9 @@ class BingoCard(db.Model):  # type: ignore
             # Pick one of a set of victory patterns.
             pattern = random.choice(BingoCard.PATTERNS)
 
-        with db.session.no_autoflush:
-            total_amounts = self.compute_total_amounts_for_resource(
-                user, start, end, pattern
-            )
+        total_amounts = self.compute_total_amounts_for_resource(
+            user, start, end, pattern
+        )
 
         # Create 25=5x5 tiles.
         step_tiles = [BingoTile(bingo_card=self) for _ in range(random.randint(7, 9))]
@@ -550,7 +634,6 @@ class BingoCard(db.Model):  # type: ignore
             step_tile.required_for_win = pattern.required_coordinate(
                 x=step_tile.coordinate_x, y=step_tile.coordinate_y
             )
-            db.session.add(step_tile)
 
         for active_minutes_tile in active_minutes_tiles:
             # Assign ~1/8 or ~1/9 of the total resource amount
@@ -568,7 +651,6 @@ class BingoCard(db.Model):  # type: ignore
             active_minutes_tile.required_for_win = pattern.required_coordinate(
                 x=active_minutes_tile.coordinate_x, y=active_minutes_tile.coordinate_y
             )
-            db.session.add(active_minutes_tile)
 
         for distance_km_tile in distance_km_tiles:
             # Assign ~1/8 or ~1/9 of the total resource amount
@@ -586,9 +668,17 @@ class BingoCard(db.Model):  # type: ignore
             distance_km_tile.required_for_win = pattern.required_coordinate(
                 x=distance_km_tile.coordinate_x, y=distance_km_tile.coordinate_y
             )
-            db.session.add(distance_km_tile)
 
         self.bingo_tiles = step_tiles + active_minutes_tiles + distance_km_tiles
+
+        # assign bonus tiles.
+        self.assign_bonus_tiles(
+            TotalAmounts(
+                steps=total_amounts.steps / 10,
+                active_minutes=total_amounts.active_minutes / 10,
+                distance_km=total_amounts.distance_km / 10,
+            )
+        )
 
         return self
 
