@@ -10,7 +10,7 @@ type WeekendWarriorProps = {
     startAt: number;
     endAt: number;
     ended: boolean;
-    sealAt: number;
+    sealAt?: number;
     sealed: boolean;
     activities: Activity[];
 }

@@ -17,7 +17,7 @@ type Challenge = {
     endAt: number
     ended: boolean
     sealAt?: number
-    sealed?: boolean
+    sealed: boolean
     activities: Activity[]
     currentUserPlacement?: number
 }

@@ -17,7 +17,7 @@ export type UserLeaderboardHeaderProps = {
     endAt: number;
     ended: boolean;
     sealAt?: number;
-    sealed?: boolean;
+    sealed: boolean;
 }
 
 export const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt, sealed }: UserLeaderboardHeaderProps) => {
@@ -92,7 +92,7 @@ type UserLeaderboardProps = {
     startAt: number;
     endAt: number;
     ended: boolean;
-    sealAt: number;
+    sealAt?: number;
     sealed: boolean;
     unit: string;
 }
