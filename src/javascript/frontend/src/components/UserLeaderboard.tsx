@@ -24,7 +24,7 @@ export const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt
     let timingCopy = "";
     if (ended) {
         timingCopy = "Ended " + formatDateDifference(getCurrentUnixTime() - endAt) + " ago";
-        if (sealAt && !sealed) {
+        if (!sealed) {
             timingCopy = "⚠️" + timingCopy + `. ${formatDateDifference(sealAt - getCurrentUnixTime())} left to record data!⚠️`
         }
     } else if (getCurrentUnixTime() > startAt) {
