@@ -16,7 +16,7 @@ export type UserLeaderboardHeaderProps = {
     startAt: number;
     endAt: number;
     ended: boolean;
-    sealAt?: number;
+    sealAt: number;
     sealed: boolean;
 }
 
@@ -92,7 +92,7 @@ type UserLeaderboardProps = {
     startAt: number;
     endAt: number;
     ended: boolean;
-    sealAt?: number;
+    sealAt: number;
     sealed: boolean;
     unit: string;
 }

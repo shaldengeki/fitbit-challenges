@@ -30,8 +30,8 @@ it('should not show time left to record data when the challenge is not sealable'
         startAt={0}
         endAt={0}
         ended={true}
-        sealAt={undefined}
-        sealed={false}
+        sealAt={0}
+        sealed={true}
       />
     </MockedProvider>,
   );
