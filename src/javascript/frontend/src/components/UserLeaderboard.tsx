@@ -16,15 +16,15 @@ export type UserLeaderboardHeaderProps = {
     startAt: number;
     endAt: number;
     ended: boolean;
-    sealAt: number;
-    sealed: boolean;
+    sealAt?: number;
+    sealed?: boolean;
 }
 
 export const UserLeaderboardHeader = ({ title, id, startAt, endAt, ended, sealAt, sealed }: UserLeaderboardHeaderProps) => {
     let timingCopy = "";
     if (ended) {
         timingCopy = "Ended " + formatDateDifference(getCurrentUnixTime() - endAt) + " ago";
-        if (!sealed) {
+        if (sealAt && !sealed) {
             timingCopy = "⚠️" + timingCopy + `. ${formatDateDifference(sealAt - getCurrentUnixTime())} left to record data!⚠️`
         }
     } else if (getCurrentUnixTime() > startAt) {
