@@ -669,6 +669,7 @@ class TestBingoCard:
                 t.bonus_amount
                 for t in card.bingo_tiles
                 if t.bonus_type == BingoTileBonusType.STEPS
+                and t.bonus_amount is not None
             )
             >= 0
         )
@@ -678,6 +679,7 @@ class TestBingoCard:
                 t.bonus_amount
                 for t in card.bingo_tiles
                 if t.bonus_type == BingoTileBonusType.ACTIVE_MINUTES
+                and t.bonus_amount is not None
             )
             >= 0
         )
@@ -687,6 +689,7 @@ class TestBingoCard:
                 t.bonus_amount
                 for t in card.bingo_tiles
                 if t.bonus_type == BingoTileBonusType.DISTANCE_KM
+                and t.bonus_amount is not None
             )
             >= 0
         )
