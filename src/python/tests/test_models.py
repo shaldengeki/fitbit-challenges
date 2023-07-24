@@ -663,36 +663,24 @@ class TestBingoCard:
         )
 
         # Total steps bonuses are within 20% of 1/10 the total activity.
-        assert (
-            20
-            >= sum(
-                t.bonus_amount
-                for t in card.bingo_tiles
-                if t.bonus_type == BingoTileBonusType.STEPS
-                and t.bonus_amount is not None
-            )
-            >= 0
+        actual_step_bonuses = sum(
+            t.bonus_amount if t.bonus_amount is not None else 0
+            for t in card.bingo_tiles
+            if t.bonus_type == BingoTileBonusType.STEPS
         )
-        assert (
-            8
-            >= sum(
-                t.bonus_amount
-                for t in card.bingo_tiles
-                if t.bonus_type == BingoTileBonusType.ACTIVE_MINUTES
-                and t.bonus_amount is not None
-            )
-            >= 0
+        assert 20 >= actual_step_bonuses >= 0
+        actual_minute_bonuses = sum(
+            t.bonus_amount if t.bonus_amount is not None else 0
+            for t in card.bingo_tiles
+            if t.bonus_type == BingoTileBonusType.ACTIVE_MINUTES
         )
-        assert (
-            decimal.Decimal("0.72")
-            >= sum(
-                t.bonus_amount
-                for t in card.bingo_tiles
-                if t.bonus_type == BingoTileBonusType.DISTANCE_KM
-                and t.bonus_amount is not None
-            )
-            >= 0
+        assert 8 >= actual_minute_bonuses >= 0
+        actual_distance_bonuses = sum(
+            t.bonus_amount if t.bonus_amount is not None else 0
+            for t in card.bingo_tiles
+            if t.bonus_type == BingoTileBonusType.DISTANCE_KM
         )
+        assert decimal.Decimal("0.72") >= actual_distance_bonuses >= 0
 
 
 class TestUser:
