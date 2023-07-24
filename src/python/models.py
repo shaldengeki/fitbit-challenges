@@ -503,8 +503,8 @@ class BingoCard(db.Model):  # type: ignore
 
         totals = totals.copy()
         average_per_tile = TotalAmounts(
-            steps=totals.steps / (step_tiles or 1),
-            active_minutes=totals.active_minutes / (minutes_tiles or 1),
+            steps=int(round(totals.steps / (step_tiles or 1), 0)),
+            active_minutes=int(round(totals.active_minutes / (minutes_tiles or 1), 0)),
             distance_km=totals.distance_km / (distance_tiles or 1),
         )
 
@@ -527,7 +527,8 @@ class BingoCard(db.Model):  # type: ignore
                     [BingoTileBonusType.STEPS, BingoTileBonusType.ACTIVE_MINUTES]
                 )
 
-            tile.bonus_type = bonus_type
+            tile.bonus_type = bonus_type.value
+            amount: int | decimal.Decimal
 
             if bonus_type == BingoTileBonusType.STEPS:
                 amount = apply_fuzz_factor_to_int(average_per_tile.steps, 20)
@@ -547,7 +548,7 @@ class BingoCard(db.Model):  # type: ignore
             else:
                 raise ValueError(f"Unknown bonus type: {bonus_type}")
 
-            tile.bonus_amount = amount
+            tile.bonus_amount = int(amount)
 
     def compute_total_amounts_for_resource(
         self,
@@ -698,8 +699,8 @@ class BingoCard(db.Model):  # type: ignore
         # assign bonus tiles.
         self.assign_bonus_tiles(
             TotalAmounts(
-                steps=total_amounts.steps / 10,
-                active_minutes=total_amounts.active_minutes / 10,
+                steps=int(round(total_amounts.steps / 10, 0)),
+                active_minutes=int(round(total_amounts.active_minutes / 10, 0)),
                 distance_km=total_amounts.distance_km / 10,
             )
         )
