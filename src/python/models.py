@@ -516,19 +516,31 @@ class BingoCard(db.Model):  # type: ignore
             # Pick a resource other than the one this tile cost to assign a bonus for.
             if tile.steps is not None:
                 bonus_type = random.choice(
-                    [BingoTileBonusType.ACTIVE_MINUTES, BingoTileBonusType.DISTANCE_KM]
+                    [
+                        BingoTileBonusType.ACTIVE_MINUTES,
+                        BingoTileBonusType.DISTANCE_KM,
+                        BingoTileBonusType.HALVE,
+                    ]
                 )
             elif tile.active_minutes is not None:
                 bonus_type = random.choice(
-                    [BingoTileBonusType.STEPS, BingoTileBonusType.DISTANCE_KM]
+                    [
+                        BingoTileBonusType.STEPS,
+                        BingoTileBonusType.DISTANCE_KM,
+                        BingoTileBonusType.HALVE,
+                    ]
                 )
             elif tile.distance_km is not None:
                 bonus_type = random.choice(
-                    [BingoTileBonusType.STEPS, BingoTileBonusType.ACTIVE_MINUTES]
+                    [
+                        BingoTileBonusType.STEPS,
+                        BingoTileBonusType.ACTIVE_MINUTES,
+                        BingoTileBonusType.HALVE,
+                    ]
                 )
 
             tile.bonus_type = bonus_type.value
-            amount: int | decimal.Decimal
+            amount: Optional[int | decimal.Decimal]
 
             if bonus_type == BingoTileBonusType.STEPS:
                 amount = apply_fuzz_factor_to_int(average_per_tile.steps, 20)
@@ -545,10 +557,13 @@ class BingoCard(db.Model):  # type: ignore
                 if amount > totals.distance_km:
                     amount = totals.distance_km
                 totals.distance_km -= amount
+            elif bonus_type == BingoTileBonusType.HALVE:
+                amount = None
             else:
                 raise ValueError(f"Unknown bonus type: {bonus_type}")
 
-            tile.bonus_amount = int(amount)
+            if amount is not None:
+                tile.bonus_amount = int(amount)
 
     def compute_total_amounts_for_resource(
         self,
