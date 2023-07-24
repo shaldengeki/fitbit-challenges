@@ -475,7 +475,6 @@ class BingoCard(db.Model):  # type: ignore
         # Compute the total amounts for each resource.
         duration = end - start
         duration_days = float(duration.total_seconds()) / 86400
-        print(f"Duration: {duration_days}")
 
         # Get the user's average activity over the last 30d.
         window_start = start - datetime.timedelta(days=30)
