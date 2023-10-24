@@ -61,6 +61,7 @@
   },
   "overrides": {
     "react-scripts": {
+      "postcss": ">8.2.10",
       "typescript": ">3.2.1"
     }
   }
