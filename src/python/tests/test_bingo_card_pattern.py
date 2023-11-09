@@ -44,7 +44,7 @@ class FiveByFivePattern(BingoCardPattern):
 
 class TestBingoCardPattern:
     def test_required_coordinate_raises_error_for_invalid_coordinate(self) -> None:
-        p = EmptyPattern()
+        p: BingoCardPattern = EmptyPattern()
         with pytest.raises(IndexError):
             p.required_coordinate(0, 0)
 
@@ -79,7 +79,7 @@ class TestBingoCardPattern:
         assert not p.required_coordinate(1, 4)
 
     def test_number_of_required_tiles(self) -> None:
-        p = EmptyPattern()
+        p: BingoCardPattern = EmptyPattern()
         assert 0 == p.number_of_required_tiles
 
         p = SingleEntryPattern()
@@ -95,7 +95,7 @@ class TestBingoCardPattern:
         assert 17 == p.number_of_required_tiles
 
     def test_number_of_tiles(self) -> None:
-        p = EmptyPattern()
+        p: BingoCardPattern = EmptyPattern()
         assert 0 == p.number_of_tiles
 
         p = SingleEntryPattern()
