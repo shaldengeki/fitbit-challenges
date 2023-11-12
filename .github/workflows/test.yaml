@@ -68,7 +68,7 @@ jobs:
           tags: shaldengeki/fitbit-challenges-api:latest
   build-frontend:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     needs:
       - test-js
     steps:
@@ -87,14 +87,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/javascsript/frontend
-          file: ./src/javascript/frontend/Dockerfile
-          push: true
-          tags: shaldengeki/fitbit-challenges-frontend:latest
       -
         name: Build and push
         uses: docker/build-push-action@v5
