@@ -57,7 +57,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: src/python
+          context: ./src/python
           file: api/Dockerfile
           push: true
           tags: shaldengeki/fitbit-challenges-api:latest
