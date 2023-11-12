@@ -37,10 +37,12 @@ jobs:
         working-directory: ./src/python
       - run: mypy .
         working-directory: ./src/python
-  build-api:
+  build-and-push:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs: test-py
+    # if: github.ref == 'refs/heads/master'
+    needs: 
+      - test-py
+      - test-js
     steps:
       -
         name: Checkout
@@ -65,3 +67,11 @@ jobs:
           file: ./src/python/api/Dockerfile
           push: true
           tags: shaldengeki/fitbit-challenges-api:latest
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/javascript/frontend
+          file: ./src/javascript/frontend/Dockerfile
+          push: true
+          tags: shaldengeki/fitbit-challenges-frontend:latest
