@@ -68,7 +68,7 @@ jobs:
           tags: shaldengeki/fitbit-challenges-api:latest
   build-frontend:
     runs-on: ubuntu-latest
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs:
       - test-js
     steps:
