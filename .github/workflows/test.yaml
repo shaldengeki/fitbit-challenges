@@ -100,6 +100,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./src/javascript/frontend
-          file: ./src/javascript/frontend/Dockerfile
+          file: ./src/javascript/frontend/Dockerfile.prod.dockerfile
           push: true
           tags: shaldengeki/fitbit-challenges-frontend:latest
