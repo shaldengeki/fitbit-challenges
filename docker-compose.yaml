@@ -6,7 +6,7 @@ services:
       dockerfile: api/Dockerfile
     image: api
     environment:
-      - PORT
+      - API_PORT
       - FLASK_DEBUG
       - DB_HOST
       - DB_USERNAME
@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile
     image: frontend
     environment:
-      - PORT=5001
+      - REACT_APP_PORT=5001
       - REACT_APP_API_HOST
       - REACT_APP_API_PORT
       - REACT_APP_API_PROTOCOL
